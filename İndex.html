@@ -4,13 +4,18 @@
 <meta charset="UTF-8">
 <title>Test</title>
 </head>
-
 <body style="background:black; color:white; text-align:center;">
 
-<h1>ÇALIŞIYOR 🎉</h1>
+<h1>ÇALIŞIYOR 🔥</h1>
+
+<canvas id="game" width="600" height="200" style="background:white;"></canvas>
 
 <script>
-document.body.style.background = "green";
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+ctx.fillStyle = "red";
+ctx.fillRect(50,50,100,100);
 </script>
 
 </body>
