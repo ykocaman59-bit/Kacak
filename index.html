@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nitrogen PDA - Eksiksiz Sistem</title>
+    <title>Nitrogen PDA - Sistem</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
@@ -22,12 +22,10 @@
             min-height: 100vh;
         }
 
-        /* Akıllı Telefon Ekran Boyutu Sabitleyici */
         .pda-screen {
             width: 100%;
             max-width: 420px;
             height: 100vh;
-            max-height: 850px;
             background-color: #ffffff;
             display: flex;
             flex-direction: column;
@@ -37,7 +35,6 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
 
-        /* Sayfa Yapıları */
         .page {
             display: none;
             flex-direction: column;
@@ -50,7 +47,6 @@
             display: flex;
         }
 
-        /* Üst Bar */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -75,7 +71,7 @@
             cursor: pointer;
         }
 
-        /* --- 1. GİRİŞ EKRANI STİLLERİ --- */
+        /* Giriş Ekranı */
         .logo-area {
             display: flex;
             flex-direction: column;
@@ -169,7 +165,7 @@
             color: #babcbe;
         }
 
-        /* --- 2. ANA MENÜ (DASHBOARD) STİLLERİ --- */
+        /* Ana Menü */
         .user-welcome {
             background: #f8fafc;
             padding: 12px;
@@ -218,7 +214,7 @@
             color: #374151;
         }
 
-        /* --- 3. STOK / MAL KABUL EKRANI STİLLERİ --- */
+        /* Mal Kabul Ekranı */
         .screen-header {
             display: flex;
             align-items: center;
@@ -315,7 +311,6 @@
             height: 40px;
         }
 
-        /* Footer */
         .footer-bar {
             display: flex;
             justify-content: space-around;
@@ -382,7 +377,7 @@
 
         <div id="menuPage" class="page">
             <div class="top-bar">
-                <div class="version-tag" id="menuVersion">v1.0.9e</div>
+                <div class="version-tag">v1.0.9e</div>
                 <div class="top-icons">
                     <button id="logoutBtn"><i class="material-icons">logout</i></button>
                 </div>
@@ -430,12 +425,12 @@
                 </div>
 
                 <div class="manual-search">
-                    <input type="text" id="manualBarcode" placeholder="Barkod No Girin veya Okutun">
+                    <input type="text" id="manualBarcode" placeholder="Barkod No Girin">
                     <button class="btn-primary" style="height:44px; padding:0 15px;" id="btnManualSearch">Ara</button>
                 </div>
 
                 <div class="product-card" id="productCard" style="display: none;">
-                    <div class="product-title" id="prodName">Ürün Adı Bekleniyor</div>
+                    <div class="product-title" id="prodName">-</div>
                     <div class="product-info-row">
                         <span>Barkod:</span>
                         <span id="prodBarcode" style="font-weight: bold;">-</span>
@@ -466,23 +461,19 @@
     </div>
 
     <script>
-        // --- ÖRNEK MARKET STOK VERİ TABANI (Bunu dilediğin gibi genişletebilirsin) ---
         const localDatabase = {
             "8690504001234": { name: "Ülker Çikolatalı Gofret 36g", price: "7.50 TL", stock: 120 },
             "8690632000156": { name: "Sütaş Ayran 1 Lt", price: "24.00 TL", stock: 45 },
-            "8691234567890": { name: "Coca Cola Orijinal Tat 2.5 Lt", price: "45.00 TL", stock: 80 },
             "12345": { name: "Test Ürünü Örnek Kek", price: "5.00 TL", stock: 12 }
         };
 
         let activeBarcode = null;
         let html5QrcodeScanner = null;
 
-        // Sayfa Değiştirme Fonksiyonu
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             
-            // Eğer Mal Kabul sayfasına geçildiyse kamerayı otomatik başlat
             if (pageId === 'malKabulPage') {
                 startCameraScanner();
             } else {
@@ -490,7 +481,6 @@
             }
         }
 
-        // Şifre Göster/Gizle
         const passwordInput = document.getElementById('password');
         const togglePasswordBtn = document.getElementById('togglePassword');
         togglePasswordBtn.addEventListener('click', () => {
@@ -503,7 +493,6 @@
             }
         });
 
-        // Beni Hatırla & Giriş İşlemi
         window.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('pda_user');
             const savedPass = localStorage.getItem('pda_pass');
@@ -539,7 +528,6 @@
             switchPage('loginPage');
         });
 
-        // --- BARKOD SİSTEMİ MANTIĞI ---
         function showProductInfo(barcode) {
             activeBarcode = barcode;
             document.getElementById('manualBarcode').value = barcode;
@@ -553,7 +541,6 @@
                 document.getElementById('productCard').style.display = 'block';
                 document.getElementById('scanStatus').textContent = "Ürün Bulundu";
             } else {
-                // Veri tabanında yoksa yeni ürün tanımı alanı açar
                 document.getElementById('prodName').textContent = "Bilinmeyen / Yeni Ürün";
                 document.getElementById('prodBarcode').textContent = barcode;
                 document.getElementById('prodPrice').textContent = "0.00 TL";
@@ -563,13 +550,11 @@
             }
         }
 
-        // Elle Arama Butonu
         document.getElementById('btnManualSearch').addEventListener('click', () => {
             const code = document.getElementById('manualBarcode').value.trim();
             if(code) showProductInfo(code);
         });
 
-        // Adet Arttırma / Azaltma Butonları
         function adjustStock(amount) {
             const input = document.getElementById('currentStockInput');
             let current = parseInt(input.value) || 0;
@@ -578,7 +563,6 @@
             input.value = current;
         }
 
-        // Stoğu Kaydetme (Simüle veri tabanı güncellemesi)
         document.getElementById('btnUpdateStock').addEventListener('click', () => {
             const newStock = parseInt(document.getElementById('currentStockInput').value) || 0;
             if (!activeBarcode) return;
@@ -588,5 +572,29 @@
             }
             
             localDatabase[activeBarcode].stock = newStock;
-            alert(`Barkod: ${activeBarcode}\nStok başarıyla ${newStock} adet olarak güncellendi!`);
-     
+            alert(`Stok başarıyla ${newStock} adet olarak güncellendi!`);
+        });
+
+        function startCameraScanner() {
+            if (html5QrcodeScanner === null) {
+                html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
+                    fps: 10, 
+                    qrbox: { width: 250, height: 150 },
+                    rememberLastUsedCamera: true
+                });
+                html5QrcodeScanner.render((decodedText) => {
+                    showProductInfo(decodedText);
+                }, (error) => {});
+            }
+        }
+
+        function stopCameraScanner() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.clear().then(() => {
+                    html5QrcodeScanner = null;
+                }).catch(err => console.error(err));
+            }
+        }
+    </script>
+</body>
+</html>
