@@ -84,7 +84,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .dropdown {
@@ -164,7 +164,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .sm-btn {
@@ -206,41 +206,28 @@
             cursor: pointer;
         }
 
-        /* Kart Ekleme Paneli */
-        .katalog-add-box {
-            background: #ffffff;
-            border: 1px solid #b4c6e7;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .katalog-add-box h4 {
-            color: #4a86e8;
+        /* 📋 Fotoğraflara Uygun Zengin Bilgi Satırları Tasarımı */
+        .info-row {
+            display: flex;
             margin-bottom: 10px;
             font-size: 14px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
+            align-items: center;
+            border-bottom: 1px dashed #e2e8f0;
+            padding-bottom: 6px;
         }
 
-        /* Hızlı Kart Enjekte Formu */
-        .hidden-inject-form {
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 10px;
-            display: none;
+        .info-label {
+            color: #5bc0de;
+            width: 110px;
+            text-align: right;
+            margin-right: 15px;
+            font-weight: bold;
         }
 
-        .hidden-inject-form input {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        .info-value {
+            color: #333;
+            font-weight: bold;
+            flex: 1;
         }
 
         /* Paneller */
@@ -266,6 +253,42 @@
             display: none;
         }
 
+        /* Kart Ekleme Paneli */
+        .katalog-add-box {
+            background: #ffffff;
+            border: 1px solid #b4c6e7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .katalog-add-box h4 {
+            color: #4a86e8;
+            margin-bottom: 10px;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .hidden-inject-form {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .hidden-inject-form input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
         .edit-box {
             background: #e2f0d9;
             border: 1px solid #b4c6e7;
@@ -283,26 +306,6 @@
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
-        }
-
-        .info-row {
-            display: flex;
-            margin-bottom: 14px;
-            font-size: 15px;
-            align-items: center;
-        }
-
-        .info-label {
-            color: #5bc0de;
-            width: 100px;
-            text-align: right;
-            margin-right: 15px;
-            font-weight: bold;
-        }
-
-        .info-value {
-            color: #333;
-            font-weight: bold;
         }
 
         /* Tablo Tasarımı */
@@ -445,9 +448,15 @@
         <div class="error-display" id="errorPanel">⚠️ KART PASİF / KAPALI!</div>
         <div class="product-title-display" id="productTitle"></div>
 
+        <div class="info-row"><div class="info-label">Stok Kodu :</div><div class="info-value" id="val-stokkodu">-</div></div>
+        <div class="info-row"><div class="info-label">Grup Kodu :</div><div class="info-value" id="val-grupkodu">-</div></div>
+        <div class="info-row"><div class="info-label">Özel Kod :</div><div class="info-value" id="val-ozelkod">-</div></div>
         <div class="info-row"><div class="info-label">Birim :</div><div class="info-value" id="val-birim">-</div></div>
         <div class="info-row"><div class="info-label">Miktar :</div><div class="info-value" id="val-miktar" style="color:#4a86e8;">-</div></div>
         <div class="info-row"><div class="info-label">Birim Fiyatı :</div><div class="info-value" id="val-fiyat" style="color:#d9534f;">-</div></div>
+        <div class="info-row"><div class="info-label">Kdv Oranı :</div><div class="info-value" id="val-kdv">-</div></div>
+        <div class="info-row"><div class="info-label">Raf Ömrü :</div><div class="info-value" id="val-rafomru">-</div></div>
+        <div class="info-row"><div class="info-label">Üretici :</div><div class="info-value" id="val-uretici">-</div></div>
         <div class="info-row"><div class="info-label">Menşei :</div><div class="info-value" id="val-mensei">-</div></div>
     </main>
 
@@ -457,7 +466,7 @@
             <h4>✨ Yeni Ürün / Stok Kartı Ekle</h4>
             <div class="barcode-group">
                 <div class="barcode-input-wrapper">
-                    <input type="text" class="input-text" id="katalogNewBarcode" placeholder="Yeni Barkod No yazın veya taratın...">
+                    <input type="text" class="input-text" id="katalogNewBarcode" placeholder="Yeni Barkod No yazın... ">
                     <button class="clear-btn" onclick="document.getElementById('katalogNewBarcode').value=''">⌫</button>
                 </div>
                 <button class="camera-trigger-btn" onclick="kameraAc('katalog-ekle-kamera', 'katalogNewBarcode', 'katalog')">
@@ -513,10 +522,11 @@
     </main>
 
     <script>
+        // Kök hücre katalog varsayılan zengin bilgileriyle güncellendi
         const kokHucreKatalog = [
-            { barkod: "8690504012345", adi: "Ülker Çikolatalı Gofret 36g", birim: "Adet", miktar: 100, fiyat: "15.00", aktif: true },
-            { barkod: "8690632001122", adi: "Sütaş Ayran 1.5 Lt", birim: "Adet", miktar: 45, fiyat: "42.50", aktif: true },
-            { barkod: "8690526005544", adi: "Coca Cola Orijinal Tat 2.5 Lt", birim: "Adet", miktar: 60, fiyat: "55.00", aktif: true }
+            { barkod: "8690504012345", adi: "Ülker Çikolatalı Gofret 36g", stokkodu: "STK-001", grupkodu: "GIDA", ozelkod: "ATIŞTIRMALIK", birim: "Adet", miktar: 100, fiyat: "15.00", kdv: "%8", rafomru: "12 Ay", uretici: "Ülker", aktif: true },
+            { barkod: "8690632001122", adi: "Sütaş Ayran 1.5 Lt", stokkodu: "STK-002", grupkodu: "SÜT-ÜRE", ozelkod: "SOĞUK", birim: "Adet", miktar: 45, fiyat: "42.50", kdv: "%1", rafomru: "15 Gün", uretici: "Sütaş", aktif: true },
+            { barkod: "8690526005544", adi: "Coca Cola Orijinal Tat 2.5 Lt", stokkodu: "STK-003", grupkodu: "İÇECEK", ozelkod: "GAZLI", birim: "Adet", miktar: 60, fiyat: "55.00", kdv: "%8", rafomru: "6 Ay", uretici: "Coca Cola", aktif: true }
         ];
 
         let aktifMağazaVeritabani = [];
@@ -525,7 +535,7 @@
         let tarananKatalogGeciciBarkod = "";
 
         function veritabaniniYukle() {
-            const hafizadakiVeri = localStorage.getItem('canli_erp_katalog_v5');
+            const hafizadakiVeri = localStorage.getItem('canli_erp_katalog_v6');
             if(hafizadakiVeri) {
                 aktifMağazaVeritabani = JSON.parse(hafizadakiVeri);
             } else {
@@ -535,7 +545,7 @@
         }
 
         function veritabaniniKaydet() {
-            localStorage.setItem('canli_erp_katalog_v5', JSON.stringify(aktifMağazaVeritabani));
+            localStorage.setItem('canli_erp_katalog_v6', JSON.stringify(aktifMağazaVeritabani));
         }
 
         function kameraAc(containerId, inputId, tip) {
@@ -561,7 +571,7 @@
                 },
                 (errorMessage) => { }
             ).catch(err => {
-                alert("Kamera izni verilmedi veya cihazda kamera bulunamadı!");
+                alert("Kamera izni verilmedi!");
                 container.style.display = "none";
             });
         }
@@ -614,9 +624,17 @@
 
             productTitle.style.display = "block";
             productTitle.innerHTML = `<b>Ürün Adı:</b> ${urun.adi}`;
-            document.getElementById('val-birim').innerText = urun.birim;
-            document.getElementById('val-miktar').innerText = urun.miktar + " Adet";
-            document.getElementById('val-fiyat').innerText = urun.fiyat + " TL";
+            
+            // Tüm zengin verilerin DOM doldurması
+            document.getElementById('val-stokkodu').innerText = urun.stokkodu || "STK-" + Math.floor(100 + Math.random() * 900);
+            document.getElementById('val-grupkodu').innerText = urun.grupkodu || "GENEL";
+            document.getElementById('val-ozelkod').innerText = urun.ozelkod || "STANDART";
+            document.getElementById('val-birim').innerText = urun.birim || "Adet";
+            document.getElementById('val-miktar').innerText = (urun.miktar !== undefined ? urun.miktar : 0) + " Adet";
+            document.getElementById('val-fiyat').innerText = (urun.fiyat || "0.00") + " TL";
+            document.getElementById('val-kdv').innerText = urun.kdv || "%8";
+            document.getElementById('val-rafomru').innerText = urun.rafomru || "Belirtilmemiş";
+            document.getElementById('val-uretici').innerText = urun.uretici || "Yerli Üretim";
             document.getElementById('val-mensei').innerText = "Türkiye";
         }
 
@@ -655,9 +673,15 @@
             const yeniUrun = {
                 barkod: tarananKatalogGeciciBarkod,
                 adi: _isim,
+                stokkodu: "STK-" + Math.floor(100 + Math.random() * 900),
+                grupkodu: "GENEL",
+                ozelkod: "YENİ",
                 birim: "Adet",
                 miktar: 0,
                 fiyat: _fiyat,
+                kdv: "%8",
+                rafomru: "Belirtilmemiş",
+                uretici: "Bilinmiyor",
                 aktif: true
             };
 
@@ -793,9 +817,15 @@
         }
 
         function resetInfolar() {
+            document.getElementById('val-stokkodu').innerText = '-';
+            document.getElementById('val-grupkodu').innerText = '-';
+            document.getElementById('val-ozelkod').innerText = '-';
             document.getElementById('val-birim').innerText = '-';
             document.getElementById('val-miktar').innerText = '-';
             document.getElementById('val-fiyat').innerText = '-';
+            document.getElementById('val-kdv').innerText = '-';
+            document.getElementById('val-rafomru').innerText = '-';
+            document.getElementById('val-uretici').innerText = '-';
             document.getElementById('val-mensei').innerText = '-';
         }
 
@@ -803,5 +833,3 @@
     </script>
 </body>
 </html>
-
-        
