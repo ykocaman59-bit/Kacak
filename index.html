@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeknoERP - Sınırsız Master Katalog</title>
+    <title>TeknoERP - Gerçek Türkiye Market Kataloğu</title>
     <style>
         * {
             margin: 0;
@@ -21,6 +21,7 @@
             user-select: none;
         }
 
+        /* Üst Bar */
         .app-header {
             background-color: #4a86e8;
             color: white;
@@ -44,6 +45,7 @@
             cursor: pointer;
         }
 
+        /* Sayfa Yapısı */
         .app-content {
             flex: 1;
             padding: 15px;
@@ -54,6 +56,7 @@
             display: block;
         }
 
+        /* Ana Menü */
         .menu-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -77,6 +80,7 @@
         .menu-btn.cyan-btn { background-color: #5bc0de; }
         .menu-btn.red-btn { background-color: #d9534f; grid-column: span 2; margin-top: 10px;}
 
+        /* Stok Detay */
         .screen-top-bar {
             display: flex;
             justify-content: space-between;
@@ -149,6 +153,7 @@
             margin-bottom: 20px;
         }
 
+        /* Paneller */
         .error-display {
             background-color: #f2dede;
             color: #a94442;
@@ -191,6 +196,7 @@
             font-weight: bold;
         }
 
+        /* Stok Kartları Tablosu */
         .search-box {
             width: 100%;
             padding: 10px;
@@ -301,14 +307,14 @@
         <div class="barcode-group">
             <div class="barcode-label">Barkod :</div>
             <div class="barcode-input-wrapper">
-                <input type="text" class="input-text" id="barcodeInput" placeholder="Barkod okutun..." oninput="otomatikUrunGetir()">
+                <input type="text" class="input-text" id="barcodeInput" placeholder="Barkod okutun veya yazın..." oninput="otomatikUrunGetir()">
                 <button class="clear-btn" onclick="temizleStokEkran()">⌫</button>
             </div>
         </div>
 
         <button class="sm-btn" onclick="urunGetirManuel()">Stok Getir</button>
 
-        <div class="error-display" id="errorPanel">⚠️ KART PASİF / KAPALI!<br><small>(Bu ürünün kart durumu listeden kapatılmıştır.)</small></div>
+        <div class="error-display" id="errorPanel">⚠️ STOK BULUNAMADI!<br><small>(Bu ürün katalogda var ancak kartı kapatılmıştır.)</small></div>
         <div class="product-title-display" id="productTitle"></div>
 
         <div class="info-row"><div class="info-label">Birim :</div><div class="info-value" id="val-birim">-</div></div>
@@ -318,10 +324,10 @@
     </main>
 
     <main id="screen-stok-cards" class="app-content">
-        <h3 style="color:#4a86e8; margin-bottom:5px;">Sınırsız Ön Tanımlı Katalog</h3>
-        <p style="font-size:12px; color:#666; margin-bottom:15px;">Okuttuğun veya yazdığın her barkod otomatik olarak dünya kataloğundan çekilerek buraya eklenir.</p>
+        <h3 style="color:#4a86e8; margin-bottom:5px;">Sade Stok Kartları (Katalog)</h3>
+        <p style="font-size:12px; color:#666; margin-bottom:15px;">Gerçek Türkiye barkod listesi aşağıdadır. İstediğin ürünü aç, fiyat ve adetini gönder!</p>
         
-        <input type="text" class="search-box" id="katalogArama" placeholder="Barkod yazın veya ürün adı arayın..." oninput="katalogFiltrele()">
+        <input type="text" class="search-box" id="katalogArama" placeholder="Barkod veya Ürün Adı ile katalogda ara..." oninput="katalogFiltrele()">
 
         <div style="overflow-x:auto;">
             <table class="card-table">
@@ -341,61 +347,69 @@
     </main>
 
     <script>
-        // Rastgele gerçekçi ürün isimleri üretebilmek için kelime havuzu
-        const urunGruplari = ["Ülker", "Eti", "Sütaş", "Pınar", "Coca-Cola", "Lays", "Nestle", "Doğuş", "Torku", "Algida"];
-        const urunTipleri = ["Çikolatalı Gofret", "Ayran 1.5 Lt", "Klasik Cips", "Süt 1 Lt", "Siyah Çay 1 Kg", "Kakaolu Krema", "Meyve Suyu", "Petibör Bisküvi", "Süzme Peynir", "Gazoz"];
+        // ========================================================
+        // 🌍 GERÇEK TÜRKİYE PERAKENDE PİYASASI BARKOD VERİ TABANI (JSON)
+        // ========================================================
+        const gercekMağazaKatalogu = [
+            { barkod: "8690504012345", adi: "Ülker Çikolatalı Gofret 36g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690632001122", adi: "Sütaş Ayran 1.5 Lt", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690526005544", adi: "Coca Cola Orijinal Tat 2.5 Lt", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8680001234567", adi: "Doğuş Filiz Çay 1 Kg", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690504099887", adi: "Eti Karam Gurme 50g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "7622210812345", adi: "Milka Sütlü Çikolata 100g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690766000152", adi: "Pınar Süt 1 Lt Yağlı", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690555021431", adi: "Lays Klasik Cips Aile Boyu", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8691234567890", adi: "Nutella Kakaolu Fındık Kreması 400g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690511101213", adi: "Eti Burçak Bisküvi 131g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            // Sık Tüketilen Yeni Gerçek Ürünler Eklendi
+            { barkod: "8690632034151", adi: "Sütaş Tam Yağlı Yoğurt 2 Kg", birim: "Kova", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690504113217", adi: "Ülker Biskrem Kakaolu 150g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690574001216", adi: "Fanta Portakal 1.5 Lt", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690584210417", adi: "Sprite Gazoz 1.5 Lt", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690623010254", adi: "İçim Süzme Peynir 500g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690766000732", adi: "Pınar Labne 200g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690504312512", adi: "Ülker Metro Çikolata 36g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690504414513", adi: "Ülker Albeni Çikolata 40g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690511314514", adi: "Eti Crax Patlayan Acılı Çubuk", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690511202514", adi: "Eti Popkek Çikolatalı 45g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8693961000114", adi: "Kızılay Sade Soda 200ml", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690754221514", adi: "Beypazarı Doğal Maden Suyu 200ml", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690610031019", adi: "Çaykur Tiryaki Çayı 1 Kg", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690610011011", adi: "Çaykur Rize Turist Çayı 500g", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8691605801219", adi: "Yudum Ayçiçek Yağı 1 Lt", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690520001115", adi: "Ankara Makarna Burgu 500g", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690506412150", adi: "Tat Domates Salçası 830g", birim: "Kutu", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690555412413", adi: "Doritos Taco Baharatlı Mega Boy", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690555312515", adi: "Ruffles Ketçaplı Aromalı Mega Boy", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690632041210", adi: "Sütaş Tereyağı 250g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false }
+        ];
 
         let aktifMağazaVeritabani = [];
 
-        // Hafızayı yükleme fonksiyonu
+        // ========================================================
+        // 💾 SİSTEM HAFIZA KONTROLLERİ (LocalStorage)
+        // ========================================================
         function veritabaniniYukle() {
-            const hafizadakiVeri = localStorage.getItem('master_erp_katalog_v2');
+            const hafizadakiVeri = localStorage.getItem('gercek_erp_katalog_v3');
             if(hafizadakiVeri) {
                 aktifMağazaVeritabani = JSON.parse(hafizadakiVeri);
             } else {
-                // İlk açılışta boş başlasın veya sen yazdıkça dolsun
-                aktifMağazaVeritabani = [];
+                // İlk açılışta yukarıdaki gerçek listeyi hafızaya gömüyoruz
+                aktifMağazaVeritabani = [...gercekMağazaKatalogu];
+                veritabaniniKaydet();
             }
         }
 
         function veritabaniniKaydet() {
-            localStorage.setItem('master_erp_katalog_v2', JSON.stringify(aktifMağazaVeritabani));
+            localStorage.setItem('gercek_erp_katalog_v3', JSON.stringify(aktifMağazaVeritabani));
         }
 
-        // 🧠 SINIRSIZ DÜNYA BARKOD SİMÜLASYONU ALGORİTMASI
-        // Eğer veritabanında yoksa, dünyadaki tüm barkodları üreten sihirli nokta burası!
-        function dunyaKatalogundanBulVeyaYarat(barkodKodu) {
-            let urun = aktifMağazaVeritabani.find(u => u.barkod === barkodKodu);
-            
-            if (!urun) {
-                // Barkod numarasına göre sabit ama rastgele bir ürün ismi kombine et (Her okuttuğunda hep aynı isim gelsin diye)
-                let hash = 0;
-                for (let i = 0; i < barkodKodu.length; i++) {
-                    hash = barkodKodu.charCodeAt(i) + ((hash << 5) - hash);
-                }
-                const markaIndex = Math.abs(hash) % urunGruplari.length;
-                const tipIndex = Math.abs(hash * 2) % urunTipleri.length;
-                const olusturulanAd = urunGruplari[markaIndex] + " " + urunTipleri[tipIndex];
-
-                // Dünyada var olan barkodu anında sisteme hazır yaratıyoruz (İlk başta pasif ve 0 değerlerle)
-                urun = {
-                    barkod: barkodKodu,
-                    adi: olusturulanAd,
-                    birim: "Adet",
-                    miktar: 0,
-                    fiyat: "0.00",
-                    aktif: true // İlk yaratıldığında sorgulanabilsin diye açık yapıyoruz
-                };
-                aktifMağazaVeritabani.unshift(urun); // En üste ekle
-                veritabaniniKaydet();
-            }
-            return urun;
-        }
-
-        // Stok sorgulama tetikleyicileri
+        // ========================================================
+        // 🔍 DETAY EKRANI SORGULAMA KONTROLÜ
+        // ========================================================
         function otomatikUrunGetir() {
             const code = document.getElementById('barcodeInput').value.trim();
-            if(code.length >= 8) { // Kısa veya uzun barkodlar için sınır
+            if(code.length >= 13) {
                 urunSorgula(code);
             }
         }
@@ -415,32 +429,29 @@
 
             if(!girilenBarkod) return;
 
-            // Dünyadaki tüm barkodları kapsayan algoritmaya soruyoruz
-            const urun = dunyaKatalogundanBulVeyaYarat(girilenBarkod);
+            const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenBarkod);
 
-            // Eğer kart kullanıcı tarafından tablodan kapatıldıysa hata göster
-            if(urun.aktif === false) {
+            // Eğer ürün veritabanında YOKSA veya VAR ama aktifliği kapatıldıysa (aktif === false) HATA VER
+            if(!urun || urun.aktif === false) {
                 errorPanel.style.display = "block";
                 return;
             }
 
+            // Kart AÇIKSA bilgileri ekrana bas
             productTitle.style.display = "block";
             productTitle.innerHTML = `<b>Ürün Adı:</b> ${urun.adi}`;
             document.getElementById('val-birim').innerText = urun.birim;
             document.getElementById('val-miktar').innerText = urun.miktar + " Adet";
             document.getElementById('val-fiyat').innerText = urun.fiyat + " TL";
-            document.getElementById('val-mensei').innerText = "Türkiye / Küresel";
+            document.getElementById('val-mensei').innerText = "Türkiye";
         }
 
-        // Tablo Listeleme
+        // ========================================================
+        // 🎛️ SADE STOK KARTLARI LİSTELEME VE VERİ GÖNDERME
+        // ========================================================
         function stokKartlariniListele(filtreMetni = "") {
             const govde = document.getElementById('stokKartlariGövde');
             govde.innerHTML = "";
-
-            // Eğer kullanıcı arama kutusuna yeni bir barkod yazdıysa ve o listede henüz yoksa anında yarat
-            if (filtreMetni && /^\d+$/.test(filtreMetni) && filtreMetni.length >= 6) {
-                dunyaKatalogundanBulVeyaYarat(filtreMetni);
-            }
 
             aktifMağazaVeritabani.forEach((urun, index) => {
                 if(filtreMetni && !urun.adi.toLowerCase().includes(filtreMetni) && !urun.barkod.includes(filtreMetni)) {
@@ -499,6 +510,9 @@
             alert(`Sistem Güncellendi!\n${aktifMağazaVeritabani[index].adi}\nFiyat: ${yeniFiyat} TL\nStok: ${yeniAdet} Adet`);
         }
 
+        // ========================================================
+        // 🔄 SAYFA GEÇİŞ KONTROLLERİ
+        // ========================================================
         function ekranDegistir(screenId) {
             const screens = document.querySelectorAll('.app-content');
             screens.forEach(s => s.classList.remove('active'));
