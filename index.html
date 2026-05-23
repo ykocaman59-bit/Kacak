@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeknoERP Stok Yönetimi Klonu</title>
+    <title>TeknoERP Stok Yönetimi - Gelişmiş Klon</title>
     <style>
         /* Genel Uygulama Sıfırlamaları */
         * {
@@ -22,7 +22,7 @@
             user-select: none;
         }
 
-        /* Üst Bar (Header) - Uygulamadaki Birebir Mavi Tonu */
+        /* Üst Sabit Bar (Header) */
         .app-header {
             background-color: #4a86e8;
             color: white;
@@ -58,77 +58,20 @@
         .app-content {
             flex: 1;
             padding: 15px;
-            display: none; /* JavaScript ile kontrol edilecek */
+            display: none;
         }
 
         .app-content.active {
             display: block;
         }
 
-        /* --- ANA MENÜ EKRANI (Görsel 1) --- */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .menu-btn {
-            background-color: #5c93ed;
-            color: white;
-            border: none;
-            padding: 25px 15px;
-            border-radius: 30px; /* Görseldeki oval yapı */
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: background 0.2s;
-        }
-
-        .menu-btn.cyan-btn {
-            background-color: #5bc0de;
-        }
-
-        .menu-btn:active {
-            opacity: 0.8;
-        }
-
-        .logout-container {
-            grid-column: span 2;
-            display: flex;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        .logout-btn {
-            background-color: #f05a5b; /* Görseldeki kırmızı tonu */
-            color: white;
-            border: none;
-            width: 50%;
-            padding: 15px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .footer-link {
-            text-align: center;
-            margin-top: 30px;
-            color: #337ab7;
-            font-weight: bold;
-            text-decoration: none;
-            display: block;
-            font-size: 15px;
-        }
-
-        /* --- ORTAK FORM VE DETAY TASARIMLARI (Görsel 2, 3, 4, 5, 6) --- */
+        /* --- STOK DETAY ANA EKRANI --- */
         .screen-top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            position: relative;
         }
 
         .dropdown {
@@ -139,31 +82,139 @@
             font-size: 14px;
             color: #555;
             min-width: 140px;
+            outline: none;
         }
 
-        .action-dropdown {
+        /* İşlemler Butonu ve Açılır Menüsü */
+        .action-menu-container {
+            position: relative;
+        }
+
+        .action-btn {
             background-color: #4a86e8;
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 8px 20px;
             border-radius: 15px;
             font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .action-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 35px;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            z-index: 500;
+            border: 1px solid #ddd;
+        }
+
+        .action-dropdown-content a {
+            color: #555;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+        }
+
+        .action-dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Barkod Alanı */
+        .barcode-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .barcode-label {
+            color: #5bc0de;
+            font-weight: bold;
+            font-size: 15px;
+            width: 70px;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        .barcode-input-wrapper {
+            flex: 1;
+            display: flex;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            align-items: center;
+            padding-right: 5px;
+        }
+
+        .input-text {
+            flex: 1;
+            border: none;
+            padding: 8px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .clear-btn {
+            background: #4a86e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* Orta Butonlar */
+        .row-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: space-between;
+        }
+
+        .sm-btn {
+            background-color: #4a86e8;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+
+        .cam-btn {
+            flex: 0 0 50px;
+            background-color: #4a86e8;
+            font-size: 16px;
         }
 
         /* Bilgi Satırları */
         .info-row {
             display: flex;
-            margin-bottom: 12px;
-            font-size: 14px;
+            margin-bottom: 14px;
+            font-size: 15px;
             align-items: center;
         }
 
         .info-label {
             color: #5bc0de;
-            width: 110px;
+            width: 100px;
             text-align: right;
             margin-right: 15px;
-            font-weight: 500;
+            font-weight: bold;
         }
 
         .info-value {
@@ -171,53 +222,239 @@
             font-weight: 500;
         }
 
-        /* Barkod ve Arama Alanları */
-        .barcode-group {
+        /* Seçim Alanları (Dizayn Seç vb.) */
+        .select-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .fake-select-box {
+            border: 1px solid #ccc;
+            padding: 8px 12px;
+            border-radius: 4px;
+            background: white;
+            min-width: 130px;
+            font-size: 14px;
+            color: #555;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fake-select-box::after {
+            content: '▼';
+            font-size: 10px;
+            color: #999;
+        }
+
+        .checkbox-group {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
+            gap: 5px;
+            color: #0088cc;
+            font-weight: bold;
+            font-size: 14px;
         }
 
-        .input-text {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-left: 10px;
-        }
-
-        .row-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .sm-btn {
-            background-color: #4a86e8;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 15px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        /* Alt Aksiyon Buton Grubu */
+        /* Alt Sabit Butonlar */
         .bottom-actions-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-top: 40px;
+            margin-top: 30px;
         }
 
         .bottom-btn {
-            background-color: #5c93ed;
+            background-color: #4a86e8;
             color: white;
             border: none;
-            padding: 15px 10px;
+            padding: 12px 10px;
             border-radius: 20px;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .qty-input {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        /* --- DIZAYN SEC MODAL (AÇILIR PENCERE - Görsel 2) --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-box {
+            background: white;
+            width: 85%;
+            max-width: 320px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .modal-item {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            font-size: 16px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .modal-item:last-child {
+            border-bottom: none;
+        }
+
+        .radio-circle {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #555;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .modal-item.selected .radio-circle {
+            border-color: #4a86e8;
+            background: radial-gradient(circle, #4a86e8 40%, transparent 50%);
+        }
+
+        /* --- MANUEL ARAMA EKRANI (Görsel 4) --- */
+        .search-top-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .back-btn {
+            background-color: #4a86e8;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .search-wrapper {
+            flex: 1;
+            display: flex;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            overflow: hidden;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            padding: 8px;
+            outline: none;
+        }
+
+        .search-go-btn {
+            background: #4a86e8;
+            color: white;
+            border: none;
+            padding: 0 12px;
+            cursor: pointer;
+        }
+
+        .table-container {
+            background: white;
+            border: 1px solid #4a86e8;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            background: #f0f0f0;
+            font-weight: bold;
+            font-size: 13px;
+            color: #555;
+            text-align: center;
+            border-bottom: 1px solid #ccc;
+            padding: 8px 0;
+        }
+
+        .table-header div {
+            border-right: 1px solid #ccc;
+        }
+
+        .table-header div:last-child {
+            border-right: none;
+        }
+
+        .table-body {
+            height: 200px;
+            text-align: center;
+            color: #999;
+            padding-top: 20px;
+            font-size: 14px;
+        }
+
+        /* --- KAMERA VİZÖRÜ SİMÜLASYONU (Görsel 5) --- */
+        .camera-screen {
+            display: none;
+            position: fixed;
+            top: 50px; /* Header altı */
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 50px);
+            background: #0c0c0c;
+            z-index: 1500;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .cam-top-icon {
+            align-self: flex-end;
+            background: #5cb85c;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .scan-window {
+            width: 220px;
+            height: 180px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255, 255, 255, 0.03);
+            position: relative;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6); /* Vizör efekti */
+        }
+
+        /* Alt Kapatma Alanı */
+        .cam-footer {
+            color: white;
+            font-size: 14px;
+            margin-bottom: 60px;
+            letter-spacing: 0.5px;
             cursor: pointer;
         }
     </style>
@@ -226,146 +463,174 @@
 
     <header class="app-header">
         <span class="status">Online</span>
-        <span class="home-icon" onclick="anaMenuyeDon()">🏠</span>
+        <span class="home-icon" onclick="pencereleriKapat()">🏠</span>
         <span class="more-icon">•••</span>
     </header>
 
-    <main id="screen-menu" class="app-content active">
-        <div class="menu-grid">
-            <button class="menu-btn" onclick="ekranDegistir('screen-stok')">Stok Detay</button>
-            <button class="menu-btn cyan-btn" onclick="ekranDegistir('screen-sayim')">Sayim Fişi</button>
-            <button class="menu-btn" onclick="ekranDegistir('screen-deposevk')">Deposevk</button>
-            <button class="menu-btn cyan-btn" onclick="ekranDegistir('screen-satis')">Satış İrsaliyesi</button>
-            <button class="menu-btn" onclick="ekranDegistir('screen-alis')">Alış İrsaliyesi</button>
-        </div>
-        <div class="logout-container">
-            <button class="logout-btn" onclick="alert('Çıkış yapılıyor...')">Çıkış</button>
-        </div>
-        <a href="http://www.teknoerp.com.tr" target="_blank" class="footer-link">www.teknoerp.com.tr</a>
-    </main>
-
-    <main id="screen-stok" class="app-content">
+    <main id="main-stok-screen" class="app-content active">
         <div class="screen-top-bar">
             <select class="dropdown"><option>BATTALGAZİ</option></select>
-            <select class="action-dropdown"><option>İşlemler</option></select>
+            
+            <div class="action-menu-container">
+                <button class="action-btn" onclick="toggleActionMenu()">İşlemler ▾</button>
+                <div class="action-dropdown-content" id="actionsMenu">
+                    <a href="#" onclick="menuSec('Yeni Evrak')">Yeni Evrak</a>
+                    <a href="#" onclick="menuSec('Barkod Detay')">Barkod Detay</a>
+                    <a href="#" onclick="menuSec('Fiyat Değiştir')">Fiyat Değiştir</a>
+                    <a href="#" onclick="menuSec('PDF')">PDF</a>
+                    <a href="#" onclick="menuSec('Reyon Tanımları')">Reyon Tanımları</a>
+                </div>
+            </div>
         </div>
 
         <div class="barcode-group">
-            <label style="color: #5bc0de;">Barkod :</label>
-            <input type="text" class="input-text" placeholder="Barkod Okutun veya Yazın">
+            <div class="barcode-label">Barkod :</div>
+            <div class="barcode-input-wrapper">
+                <input type="text" class="input-text" id="barcodeInput" placeholder="">
+                <button class="clear-btn" onclick="document.getElementById('barcodeInput').value=''">⌫</button>
+            </div>
         </div>
 
         <div class="row-buttons">
-            <button class="sm-btn">Manuel Arama</button>
-            <button class="sm-btn" style="background-color: #5c93ed;">📷</button>
-            <button class="sm-btn">Getir</button>
+            <button class="sm-btn" onclick="openManuelArama()">Manuel Arama</button>
+            <button class="sm-btn cam-btn" onclick="openKamera()">📷</button>
+            <button class="sm-btn" onclick="alert('Veri getiriliyor...')">Getir</button>
         </div>
 
-        <div class="info-row"><div class="info-label">Birim :</div><div class="info-value">-</div></div>
-        <div class="info-row"><div class="info-label">Miktar :</div><div class="info-value">-</div></div>
-        <div class="info-row"><div class="info-label">Birim Fiyatı :</div><div class="info-value">-</div></div>
-        <div class="info-row"><div class="info-label">Menşei :</div><div class="info-value">-</div></div>
+        <div class="info-row"><div class="info-label">Birim :</div><div class="info-value" id="val-birim">-</div></div>
+        <div class="info-row"><div class="info-label">Miktar :</div><div class="info-value" id="val-miktar">-</div></div>
+        <div class="info-row"><div class="info-label">Birim Fiyatı :</div><div class="info-value" id="val-fiyat">-</div></div>
+        <div class="info-row"><div class="info-label">Menşei :</div><div class="info-value" id="val-mensei">-</div></div>
+
+        <div class="select-row">
+            <div class="info-row" style="margin-bottom:0;"><div class="info-label">Dizayn Seç:</div></div>
+            <div class="fake-select-box" id="dizaynSeçiliAlan" onclick="openDizaynModal()">Raf Etiket</div>
+        </div>
+
+        <div class="select-row" style="margin-top: 10px;">
+            <div class="info-row" style="margin-bottom:0;"><div class="info-label">Diğer Fiyat:</div></div>
+            <div class="info-value">-</div>
+            <div class="info-row" style="margin-bottom:0; margin-left: 20px;"><div class="info-label" style="width:70px;">Fiyat Seç:</div></div>
+            <select class="dropdown" style="min-width:90px; padding: 5px;"><option></option></select>
+        </div>
+
+        <div class="select-row" style="margin-top: 10px;">
+            <div class="info-row" style="margin-bottom:0;"><div class="info-label">Stok Resmi:</div></div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="otoEkle">
+                <label for="otoEkle">Oto. Ekle</label>
+            </div>
+        </div>
 
         <div class="bottom-actions-grid">
-            <button class="bottom-btn" style="grid-column: span 1;">Ekle</button>
-            <button class="bottom-btn" style="grid-column: span 1;">İşlem Detayları</button>
+            <input type="number" class="qty-input" value="1">
+            <button class="bottom-btn" style="background-color: #4a86e8;">Ekle</button>
+            <button class="bottom-btn" style="grid-column: span 2; margin-top: 5px;">İşlem Detayları</button>
         </div>
     </main>
 
-    <main id="screen-sayim" class="app-content">
-        <div class="screen-top-bar">
-            <select class="dropdown"><option>Sayım 1</option></select>
-            <select class="action-dropdown"><option>İşlemler</option></select>
+    <main id="manuel-arama-screen" class="app-content">
+        <div class="search-top-row">
+            <button class="back-btn" onclick="pencereleriKapat()">←</button>
+            <select class="dropdown" style="min-width: 90px;"><option>ADI</option></select>
+            <div class="search-wrapper">
+                <input type="text" class="search-input">
+                <button class="search-go-btn">🔍</button>
+            </div>
         </div>
 
-        <div class="info-row"><div class="info-label">Evrak No :</div><div class="info-value">1</div></div>
-        <div class="info-row"><div class="info-label">Depo :</div><div class="info-value">BATTALGAZİ</div></div>
-        <div class="info-row"><div class="info-label">Toplam Satır :</div><div class="info-value">0.00</div></div>
-
-        <div class="bottom-actions-grid">
-            <button class="bottom-btn">Belge Bilgisi</button>
-            <div style="visibility: hidden;"></div> <button class="bottom-btn">Barkod Giriş</button>
-            <button class="bottom-btn">İşlem Satırları</button>
-        </div>
-    </main>
-
-    <main id="screen-deposevk" class="app-content">
-        <div class="screen-top-bar">
-            <select class="dropdown"><option>Depolar Arası Sevk</option></select>
-            <select class="action-dropdown"><option>İşlemler</option></select>
-        </div>
-
-        <div class="info-row"><div class="info-label">Seri/Sıra No :</div><div class="info-value">BTL22 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 80736</div></div>
-        <div class="info-row"><div class="info-label">Belge No :</div><div class="info-value"></div></div>
-        <div class="info-row"><div class="info-label">Çıkış Depo :</div><div class="info-value">BATTALGAZİ</div></div>
-        <div class="info-row"><div class="info-label">Giriş Depo :</div><div class="info-value"></div></div>
-        <div class="info-row"><div class="info-label">Sorumluluk :</div><div class="info-value"></div></div>
-
-        <div class="bottom-actions-grid">
-            <button class="bottom-btn">Belge Bilgisi</button>
-            <div style="visibility: hidden;"></div>
-            <button class="bottom-btn">Barkod Giriş</button>
-            <button class="bottom-btn">İşlem Satırları</button>
+        <div class="table-container">
+            <div class="table-header">
+                <div>KODU</div>
+                <div>ADI</div>
+                <div>FİYAT</div>
+            </div>
+            <div class="table-body">
+                Arama sonucu bulunamadı.
+            </div>
         </div>
     </main>
 
-    <main id="screen-satis" class="app-content">
-        <div class="screen-top-bar">
-            <select class="dropdown"><option>Toptan Satis İade İrsaliyesi</option></select>
-            <select class="action-dropdown"><option>İşlemler</option></select>
+    <div id="camera-simulation" class="camera-screen" onclick="pencereleriKapat()">
+        <div class="cam-top-icon">📷</div>
+        <div class="scan-window"></div>
+        <div class="cam-footer">Barkod Okutunuz</div>
+    </div>
+
+    <div class="modal-overlay" id="dizaynModal" onclick="closeDizaynModal()">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-item selected" onclick="dizaynSec('Raf Etiket', this)"><span>Raf Etiket</span><span class="radio-circle"></span></div>
+            <div class="modal-item" onclick="dizaynSec('Sarı Etiket', this)"><span>Sarı Etiket</span><span class="radio-circle"></span></div>
+            <div class="modal-item" onclick="dizaynSec('Sarı İNDİRİM', this)"><span>Sarı İNDİRİM</span><span class="radio-circle"></span></div>
+            <div class="modal-item" onclick="dizaynSec('A4 ETİKET', this)"><span>A4 ETİKET</span><span class="radio-circle"></span></div>
+            <div class="modal-item" onclick="dizaynSec('A4 İNDİRİM', this)"><span>A4 İNDİRİM</span><span class="radio-circle"></span></div>
         </div>
-
-        <div class="info-row"><div class="info-label">Evrak No :</div><div class="info-value">BTL23 - 746950448</div></div>
-        <div class="info-row"><div class="info-label">Cari :</div><div class="info-value"></div></div>
-        <div class="info-row"><div class="info-label">Personel :</div><div class="info-value"></div></div>
-        <div class="info-row"><div class="info-label">Sorumluluk :</div><div class="info-value"></div></div>
-        <div class="info-row"><div class="info-label">Depo :</div><div class="info-value">BATTALGAZİ</div></div>
-        <div class="info-row"><div class="info-label">Evrak Döviz :</div><div class="info-value"></div></div>
-        <div class="info-row"><div class="info-label">Toplam Satır :</div><div class="info-value">0.00</div></div>
-
-        <div class="bottom-actions-grid">
-            <button class="bottom-btn">Belge Bilgisi</button>
-            <button class="bottom-btn">Cari Seç</button>
-            <button class="bottom-btn">Barkod Giriş</button>
-            <button class="bottom-btn">İşlem Satırları</button>
-        </div>
-    </main>
-
-    <main id="screen-alis" class="app-content">
-        <div class="screen-top-bar">
-            <select class="dropdown"><option>Toptan Alış İrsaliyesi</option></select>
-            <select class="action-dropdown"><option>İşlemler</option></select>
-        </div>
-
-        <div class="info-row"><div class="info-label">Evrak No :</div><div class="info-value">BTL23 - 746950017</div></div>
-        <div class="info-row"><div class="info-label">Cari :</div><div class="info-value"></div></div>
-        <div class="info-row"><div class="info-label">Personel :</div><div class="info-value"></div></div>
-        <div class="info-row"><div class="info-label">Sorumluluk :</div><div class="info-value"></div></div>
-        <div class="info-row"><div class="info-label">Depo :</div><div class="info-value">BATTALGAZİ</div></div>
-        <div class="info-row"><div class="info-label">Evrak Döviz :</div><div class="info-value"></div></div>
-        <div class="info-row"><div class="info-label">Toplam Satır :</div><div class="info-value">0.00</div></div>
-
-        <div class="bottom-actions-grid">
-            <button class="bottom-btn">Belge Bilgisi</button>
-            <button class="bottom-btn">Cari Seç</button>
-            <button class="bottom-btn">Barkod Giriş</button>
-            <button class="bottom-btn">İşlem Satırları</button>
-        </div>
-    </main>
+    </div>
 
     <script>
-        // Sayfalar Arası Geçiş Dinamiği
-        function ekranDegistir(screenId) {
-            // Tüm içerik alanlarını gizle
-            const screens = document.querySelectorAll('.app-content');
-            screens.forEach(screen => screen.classList.remove('active'));
-            
-            // İstenen ekranı göster
-            document.getElementById(screenId).classList.add('active');
+        // İşlemler Menüsünü Aç / Kapat
+        function toggleActionMenu() {
+            const menu = document.getElementById('actionsMenu');
+            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
         }
 
-        function anaMenuyeDon() {
-            ekranDegistir('screen-menu');
+        function menuSec(isim) {
+            alert(isim + " seçildi.");
+            document.getElementById('actionsMenu').style.display = 'none';
+        }
+
+        // Dizayn Seçme Seçenekleri (Modal Kontrolü)
+        function openDizaynModal() {
+            document.getElementById('dizaynModal').style.display = 'flex';
+        }
+
+        function closeDizaynModal() {
+            document.getElementById('dizaynModal').style.display = 'none';
+        }
+
+        function dizaynSec(deger, element) {
+            document.getElementById('dizaynSeçiliAlan').innerText = deger;
+            
+            // Seçili işareti güncelleme
+            const items = document.querySelectorAll('.modal-item');
+            items.forEach(item => item.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            closeDizaynModal();
+        }
+
+        // Ekran ve Katman Geçişleri
+        function openManuelArama() {
+            pencereleriKapat();
+            document.getElementById('main-stok-screen').classList.remove('active');
+            document.getElementById('manuel-arama-screen').classList.add('active');
+        }
+
+        function openKamera() {
+            pencereleriKapat();
+            document.getElementById('camera-simulation').style.display = 'flex';
+        }
+
+        function pencereleriKapat() {
+            // Tüm modülleri ve simülasyonları ilk haline döndürür
+            document.getElementById('manuel-arama-screen').classList.remove('active');
+            document.getElementById('camera-simulation').style.display = 'none';
+            document.getElementById('dizaynModal').style.display = 'none';
+            document.getElementById('actionsMenu').style.display = 'none';
+            document.getElementById('main-stok-screen').classList.add('active');
+        }
+
+        // Dışarı tıklayınca İşlemler menüsünü kapatma kontrolü
+        window.onclick = function(event) {
+            if (!event.target.matches('.action-btn')) {
+                const dropdowns = document.getElementsByClassName("action-dropdown-content");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    let openDropdown = dropdowns[i];
+                    if (openDropdown.style.display === 'block') {
+                        openDropdown.style.display = 'none';
+                    }
+                }
+            }
         }
     </script>
 </body>
