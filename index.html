@@ -3,582 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BARKODPACKER PDA - Giriş</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <title>Sanal Panel Kontrolü</title>
     <style>
+        /* Genel Temizleme ve Karanlık Tema Ayarları */
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: #2c6ae5; /* Orijinal mavi arka plan */
+            background-color: #0f111a;
+            color: #ffffff;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
             min-height: 100vh;
         }
 
-        /* Ana Mobil Çerçeve */
-        .pda-screen {
-            width: 100%;
-            max-width: 420px;
-            height: 100vh;
-            background-color: #2c6ae5;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            position: relative;
-        }
-
-        /* Beyaz Giriş Kartı */
-        .login-card {
-            background-color: #ffffff;
-            width: 100%;
-            border-radius: 4px;
-            padding: 30px 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            position: relative;
-        }
-
-        /* Özel BARKODPACKER Logo Alanı */
-        .logo-area {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        /* 'B' Harfiyle Özel Logo Şekli */
-        .custom-logo-icon {
-            font-size: 36px;
-            font-weight: bold;
-            color: white;
-            background: linear-gradient(135deg, #2a7bbf, #1d5b92); /* Mavi 'N' gibi */
-            width: 55px;
-            height: 55px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 6px;
-            position: relative;
-        }
-
-        .custom-logo-icon::before {
-            content: "B";
-            position: absolute;
-            left: 12px; top: 8px;
-        }
-
-        /* Turuncu Kare Logo */
-        .orange-logo-box {
-            width: 55px;
-            height: 55px;
-            background-color: #e05e55;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 8px;
-            font-size: 32px;
-            font-weight: bold;
-        }
-
-        .logo-text {
-            font-size: 22px;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .logo-text span {
-            color: #e05e55;
-            font-size: 14px;
-            display: block;
-            margin-top: -3px;
-        }
-
-        /* Giriş Alanları (Kesik Çizgili) */
-        .classic-input {
-            width: 100%;
-            border: none;
-            border-bottom: 1px dashed #babcbe;
-            padding: 8px 0;
-            font-size: 15px;
-            outline: none;
-            color: #555;
-        }
-
-        .classic-input::placeholder {
-            color: #babcbe;
-        }
-
-        /* Firma Seçimi (Gri Alan) */
-        .classic-select {
-            width: 100%;
-            height: 40px;
-            background-color: #eeeeee;
-            border: none;
-            border-radius: 4px;
-            padding: 0 10px;
-            color: #777;
-            font-size: 14px;
-            outline: none;
-            cursor: pointer;
-            position: relative;
-        }
-
-        /* Beni Hatırla & İşlemler Satırı */
-        .row-actions {
+        /* Üst Bar (Header) */
+        header {
+            background-color: #161925;
+            padding: 15px 20px;
+            border-bottom: 2px solid #23283d;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 14px;
-            color: #999;
-            position: relative;
         }
 
-        .remember-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
+        header h1 {
+            font-size: 20px;
+            color: #00ffcc;
+            letter-spacing: 1px;
         }
 
-        .remember-checkbox input {
-            width: 16px;
-            height: 16px;
-            accent-color: #4a86e8;
-        }
-
-        /* "İşlemler" Butonu ve Açılır Menü */
-        .actions-btn {
-            color: #666;
-            cursor: pointer;
-            position: relative;
-            padding-right: 15px;
-        }
-
-        .actions-btn::after {
-            content: "▾";
-            position: absolute;
-            right: 0; top: 1px;
+        .status-badge {
+            background-color: #10b981;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
             font-size: 12px;
+            font-weight: bold;
         }
 
-        /* Fotoğraftaki Gibi Açılır Menü (İç Ekran) */
-        .custom-dropdown-menu {
-            display: none;
-            position: absolute;
-            top: -15px; /* Fotoğraftaki gibi Beni Hatırla satırının üstüne doğru */
-            right: -10px;
-            width: 170px;
-            background-color: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 4px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            z-index: 50;
-            flex-direction: column;
-        }
-
-        .custom-dropdown-menu.active {
-            display: flex;
-        }
-
-        .dropdown-item {
-            padding: 12px 15px;
-            font-size: 14px;
-            color: #555;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .dropdown-item:hover {
-            background-color: #f3f4f6;
-        }
-
-        .dropdown-item:not(:last-child) {
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        /* Butonlar Satırı */
-        .btn-row {
+        /* Ana Kolonlu Yapı (Grid Sistemi) */
+        .container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 5px;
-        }
-
-        .btn-classic {
-            height: 48px;
-            border: none;
-            border-radius: 24px;
-            font-size: 16px;
-            color: white;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .btn-blue {
-            background-color: #4a86e8;
-        }
-
-        .btn-red {
-            background-color: #e05e55;
-        }
-
-        /* Offline / Online Switch */
-        .switch-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            color: #999;
-            margin: 5px 0;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #4a86e8;
-            transition: .3s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #cbd5e1;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        /* Alt Linkler */
-        .web-link {
-            text-align: center;
-            color: #4a86e8;
-            text-decoration: none;
-            font-size: 13px;
-        }
-
-        .copyright {
-            text-align: center;
-            color: #666;
-            font-size: 12px;
-        }
-
-        /* ================= İÇ EKRANLAR VE FONKSİYONLAR ================= */
-        .internal-page {
-            display: none;
-            width: 100%;
-            height: 100%;
-            background-color: #ffffff;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
             padding: 20px;
+            flex: 1;
+        }
+
+        /* Kart ve Kolon Tasarımları */
+        .column-card {
+            background-color: #161925;
+            border: 1px solid #23283d;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            display: flex;
             flex-direction: column;
-            overflow-y: auto;
         }
 
-        .internal-page.active {
-            display: flex;
-        }
-
-        .screen-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 2px solid #2c6ae5;
-            padding-bottom: 8px;
+        .column-card h2 {
+            font-size: 18px;
             margin-bottom: 15px;
-            color: #2c6ae5;
-            font-weight: bold;
+            color: #f3f4f6;
+            border-bottom: 1px solid #23283d;
+            padding-bottom: 8px;
         }
 
-        .menu-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        /* Form Elemanları ve Butonlar */
+        .form-group {
+            margin-bottom: 15px;
         }
 
-        .menu-item {
-            background-color: #f3f4f6;
-            padding: 15px;
-            border-radius: 6px;
-            font-size: 15px;
-            color: #333;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 6px;
         }
 
-        .menu-item:hover {
-            background-color: #e5e7eb;
-        }
-
-        /* Kamera Tarama Alanı */
-        .scanner-view {
+        .form-group input, .form-group select {
             width: 100%;
-            background: #000;
+            padding: 10px;
+            background-color: #1f2335;
+            border: 1px solid #23283d;
             border-radius: 6px;
-            overflow: hidden;
-            margin: 15px 0;
+            color: white;
+            outline: none;
+            transition: border-color 0.3s;
         }
 
-        .product-result-box {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
-            padding: 15px;
+        .form-group input:focus, .form-group select:focus {
+            border-color: #00ffcc;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #00ffcc;
+            color: #0f111a;
+            border: none;
             border-radius: 6px;
-            margin-top: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            margin-top: auto; /* Butonu hep en alta sabitlemek için */
+        }
+
+        .btn:hover {
+            background-color: #00d4aa;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Konsol / Çıktı Ekranı */
+        .console-box {
+            background-color: #090a0f;
+            border: 1px solid #1f2335;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            color: #00ffcc;
+            height: 180px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        /* Alt Bilgi (Footer) */
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: #4b5563;
+            background-color: #090a0f;
+            border-top: 1px solid #161925;
         }
     </style>
 </head>
 <body>
 
-    <div class="pda-screen">
-        
-        <div id="loginPage" class="login-card" style="display: flex;">
-            <div class="logo-area">
-                <div class="custom-logo-icon"></div>
-                
-                <div class="logo-text">BARKODPACKER <span>PDA</span></div>
-                
-                <div class="orange-logo-box">N</div>
+    <header>
+        <h1>NITROGEN PANEL v1.0</h1>
+        <div class="status-badge">Sistem Aktif</div>
+    </header>
+
+    <div class="container">
+        <!-- 1. KOLON: Yapılandırma Girişleri -->
+        <div class="column-card">
+            <h2>⚙️ Sunucu Ayarları</h2>
+            <div class="form-group">
+                <label for="serverIp">Sunucu IP Adresi / URL</label>
+                <input type="text" id="serverIp" placeholder="Örn: 192.168.1.100 veya api.site.com">
             </div>
-
-            <input type="text" id="username" class="classic-input" placeholder="BATTALGAZI">
-            <input type="password" id="password" class="classic-input" placeholder="••••••••">
-
-            <select class="classic-select" id="companySelect">
-                <option value="">Lütfen Firma Seçimi Yapınız</option>
-                <option value="1">BARKODPACKER Ana Depo</option>
-                <option value="2">Perakende Mağaza 1</option>
-            </select>
-
-            <div class="row-actions">
-                <label class="remember-checkbox">
-                    <input type="checkbox" id="remember" checked> Beni Hatırla
-                </label>
-                
-                <div class="actions-btn" id="actionsMenuBtn">İşlemler</div>
-
-                <div class="custom-dropdown-menu" id="customDropdown">
-                    <div class="dropdown-item">Ayarlar</div>
-                    <div class="dropdown-item">Uygulamayı Güncelle</div>
-                    <div class="dropdown-item">Veri Tabanı Oluştur</div>
-                </div>
+            <div class="form-group">
+                <label for="authKey">Kimlik Doğrulama Anahtarı (API Key)</label>
+                <input type="password" id="authKey" placeholder="••••••••••••••••">
             </div>
-
-            <div class="btn-row">
-                <button class="btn-classic btn-blue" id="loginBtn">Giriş</button>
-                <button class="btn-classic btn-red" onclick="alert('PDA sisteminden çıkılıyor.')">Çıkış</button>
-            </div>
-
-            <div class="switch-container">
-                <span>Offline</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="statusMode">
-                    <span class="slider"></span>
-                </label>
-                <span>Online</span>
-            </div>
-
-            <a href="http://www.teknoerp.com.tr" target="_blank" class="web-link">www.teknoerp.com.tr</a>
-            <div class="copyright">© 2013. Tüm hakları saklıdır.</div>
-        </div>
-
-
-        <div id="menuPage" class="internal-page">
-            <div class="screen-header">
-                <span>Ana Menü</span>
-                <button onclick="logout()" style="background:none; border:none; color:red; cursor:pointer;"><i class="material-icons">logout</i></button>
-            </div>
-            <div class="menu-list">
-                <div class="menu-item" onclick="switchInternalPage('malKabulPage')">
-                    <i class="material-icons">barcode_reader</i> Stok Kabul / Mal Girişi
-                </div>
-                <div class="menu-item" onclick="switchInternalPage('malKabulPage')">
-                    <i class="material-icons">search</i> Fiyat Gör / Stok Sorgula
-                </div>
-                <div class="menu-item">
-                    <i class="material-icons">format_list_numbered</i> Raf Sayımı
-                </div>
+            <div class="form-group">
+                <label for="requestMode">İşlem Modu</label>
+                <select id="requestMode">
+                    <option value="get">Veri Oku (GET)</option>
+                    <option value="post">Veri Gönder (POST)</option>
+                    <option value="sync">Senkronize Et</option>
+                </select>
             </div>
         </div>
 
-
-        <div id="malKabulPage" class="internal-page">
-            <div class="screen-header">
-                <button onclick="switchInternalPage('menuPage')" style="background:none; border:none; cursor:pointer;"><i class="material-icons">arrow_back</i></button>
-                <span>Barkod Okuma / Mal Kabul</span>
-                <div></div>
+        <!-- 2. KOLON: Tetikleme ve Operasyon -->
+        <div class="column-card">
+            <h2>🚀 Operasyon Yönetimi</h2>
+            <div class="form-group">
+                <label for="targetPayload">Gönderilecek Veri (JSON/Metin)</label>
+                <input type="text" id="targetPayload" placeholder='Örn: {"status": "update"}'>
             </div>
-
-            <div class="scanner-view">
-                <div id="reader"></div>
+            <div class="form-group">
+                <label for="intervalSpeed">İşlem Hızı (Milisaniye)</label>
+                <input type="number" id="intervalSpeed" value="1000" min="100">
             </div>
-
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="manualInput" class="classic-input" placeholder="Barkod Girin" style="border:1px solid #ccc; padding: 5px; border-radius:4px; flex-grow:1;">
-                <button class="btn-classic btn-blue" style="height:35px; width:70px; font-size:14px; border-radius:4px;" onclick="searchBarcode()">Ara</button>
-            </div>
-
-            <div class="product-result-box" id="resultCard" style="display: none;">
-                <h4 id="prodName" style="color:#333;">-</h4>
-                <p style="font-size:14px; color:#666;">Barkod: <span id="prodCode" style="font-weight:bold;">-</span></p>
-                <p style="font-size:16px; color:#e05e55; font-weight:bold; margin-top:8px;">Stok Adedi: <span id="prodStock">0</span></p>
-                
-                <div style="display:flex; align-items:center; gap:10px; margin-top:15px;">
-                    <input type="number" id="stockQty" class="classic-input" value="1" style="width:70px; text-align:center; border:1px solid #ccc; border-radius:4px;">
-                    <button class="btn-classic btn-blue" style="height:38px; padding:0 15px; font-size:14px; border-radius:4px;" onclick="updateStock()">Stoğu Güncelle</button>
-                </div>
-            </div>
+            <button class="btn" id="startBtn" onclick="calistir()">İŞLEMİ BAŞLAT</button>
         </div>
 
+        <!-- 3. KOLON: Canlı Konsol Çıktısı -->
+        <div class="column-card">
+            <h2>🖥️ Canlı Konsol Takibi</h2>
+            <div class="console-box" id="consoleOutput">[Sistem] Başlatılmaya hazır. Verileri girip butona basın...</div>
+        </div>
     </div>
 
+    <footer>
+        &copy; 2026 Nitrogen Web Panel. Tüm hakları saklıdır. GitHub Pages üzerinde çalışmak üzere optimize edilmiştir.
+    </footer>
+
     <script>
-        // Örnek Stok Veri Tabanı
-        const database = {
-            "8690504001234": { name: "Ülker Gofret 36g", stock: 150 },
-            "8690632000156": { name: "Sütaş Ayran 1 Lt", stock: 60 },
-            "12345": { name: "Örnek Test Ürünü", stock: 20 }
-        };
-
-        let currentBarcode = null;
-        let qrScanner = null;
-
-        // Sayfa Kontrolleri
-        function switchInternalPage(pageId) {
-            document.getElementById('loginPage').style.display = 'none';
-            document.querySelectorAll('.internal-page').forEach(p => p.classList.remove('active'));
-            
-            if(pageId === 'loginPage') {
-                document.getElementById('loginPage').style.display = 'flex';
-                stopScanner();
-            } else {
-                document.getElementById(pageId).classList.add('active');
-            }
-
-            if(pageId === 'malKabulPage') {
-                startScanner();
-            } else {
-                stopScanner();
-            }
+        // Basit Konsol Log Simülasyonu
+        function logYaz(mesaj) {
+            const consoleBox = document.getElementById('consoleOutput');
+            const zaman = new Date().toLocaleTimeString();
+            consoleBox.innerHTML += `\n[${zaman}] ${mesaj}`;
+            consoleBox.scrollTop = consoleBox.scrollHeight; // Otomatik aşağı kaydır
         }
 
-        // Açılır İşlemler Menüsü Kontrolü (Fotoğraftaki Gibi)
-        const actionsBtn = document.getElementById('actionsMenuBtn');
-        const dropdownMenu = document.getElementById('customDropdown');
+        function calistir() {
+            const ip = document.getElementById('serverIp').value;
+            const mod = document.getElementById('requestMode').value;
+            const buton = document.getElementById('startBtn');
 
-        actionsBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Tıklamanın dışarı yayılmasını engeller
-            dropdownMenu.classList.toggle('active');
-        });
-
-        // Menü Dışına Tıklandığında Kapatma
-        document.addEventListener('click', () => {
-            dropdownMenu.classList.remove('active');
-        });
-
-        // Giriş Yapma
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            const comp = document.getElementById('companySelect').value;
-            if(!comp) {
-                alert("Lütfen önce bir firma seçimi yapınız!");
+            if(!ip) {
+                logYaz("⚠️ HATA: Lütfen geçerli bir IP veya URL adresi girin!");
                 return;
             }
-            switchInternalPage('menuPage');
-        });
 
-        function logout() {
-            switchInternalPage('loginPage');
-        }
-
-        // --- BARKOD SİSTEMİ MANTIĞI ---
-        function onScanSuccess(barcode) {
-            currentBarcode = barcode;
-            document.getElementById('manualInput').value = barcode;
-            document.getElementById('resultCard').style.display = 'block';
-
-            if(database[barcode]) {
-                const product = database[barcode];
-                document.getElementById('prodName').textContent = product.name;
-                document.getElementById('prodCode').textContent = barcode;
-                document.getElementById('prodStock').textContent = product.stock;
-                document.getElementById('stockQty').value = product.stock;
-            } else {
-                document.getElementById('prodName').textContent = "Yeni / Bilinmeyen Ürün";
-                document.getElementById('prodCode').textContent = barcode;
-                document.getElementById('prodStock').textContent = "0";
-                document.getElementById('stockQty').value = "1";
-            }
-        }
-
-        function searchBarcode() {
-            const code = document.getElementById('manualInput').value.trim();
-            if(code) onScanSuccess(code);
-        }
-
-        function updateStock() {
-            if(!currentBarcode) return;
-            const qty = parseInt(document.getElementById('stockQty').value) || 0;
-
-            if(!database[currentBarcode]) {
-                database[currentBarcode] = { name: "Yeni Ürün", stock: 0 };
-            }
-            database[currentBarcode].stock = qty;
-            document.getElementById('prodStock').textContent = qty;
-            alert("Stok başarıyla güncellendi!");
-        }
-
-        // Kamera Kontrolleri
-        function startScanner() {
-            if(!qrScanner) {
-                qrScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-                qrScanner.render(onScanSuccess, (err) => {});
-            }
-        }
-
-        function stopScanner() {
-            if(qrScanner) {
-                qrScanner.clear().then(() => { qrScanner = null; }).catch(e => console.error(e));
-            }
+            logYaz(`🔄 Bağlantı kuruluyor: ${ip}...`);
+            logYaz(`ℹ️ Mod ayarlandı: ${mod.toUpperCase()}`);
+            
+            // Küçük bir görsel geri bildirim
+            buton.innerHTML = "İŞLEM YAPILIYOR...";
+            buton.style.backgroundColor = "#eab308";
+            
+            setTimeout(() => {
+                logYaz("✅ İşlem başarıyla tamamlandı!");
+                buton.innerHTML = "İŞLEMİ BAŞLAT";
+                buton.style.backgroundColor = "#00ffcc";
+            }, 1500);
         }
     </script>
 </body>
