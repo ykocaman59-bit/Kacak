@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeknoERP - Gelişmiş Stok Yönetimi</title>
+    <title>Live ERP - Gelişmiş Stok Yönetimi</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         * {
             margin: 0;
@@ -78,7 +79,7 @@
         .menu-btn.cyan-btn { background-color: #5bc0de; }
         .menu-btn.red-btn { background-color: #d9534f; grid-column: span 2; margin-top: 10px;}
 
-        /* Stok Detay */
+        /* Üst Menüler */
         .screen-top-bar {
             display: flex;
             justify-content: space-between;
@@ -95,19 +96,20 @@
             color: #555;
         }
 
+        /* Barkod Giriş Grubu (Fotoğraftaki Tasarım) */
         .barcode-group {
             display: flex;
             align-items: center;
             margin-bottom: 12px;
+            gap: 8px;
         }
 
         .barcode-label {
             color: #5bc0de;
             font-weight: bold;
             font-size: 15px;
-            width: 70px;
+            width: 65px;
             text-align: right;
-            margin-right: 10px;
         }
 
         .barcode-input-wrapper {
@@ -117,7 +119,6 @@
             border-radius: 4px;
             background: white;
             align-items: center;
-            padding-right: 5px;
         }
 
         .input-text {
@@ -132,10 +133,38 @@
             background: #4a86e8;
             color: white;
             border: none;
-            border-radius: 4px;
-            width: 24px;
-            height: 24px;
+            border-top-right-radius: 3px;
+            border-bottom-right-radius: 3px;
+            width: 35px;
+            height: 33px;
             cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Kamera Butonu (Fotoğraftaki Mavi Kamera Kutusu) */
+        .camera-trigger-btn {
+            background-color: #5c93ed;
+            border: none;
+            border-radius: 4px;
+            width: 40px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .camera-trigger-btn img {
+            width: 22px;
+            height: 22px;
+            filter: invert(1);
+        }
+
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .sm-btn {
@@ -146,9 +175,72 @@
             border-radius: 20px;
             font-size: 14px;
             cursor: pointer;
-            width: 100%;
             text-align: center;
+            font-weight: bold;
+        }
+
+        /* Kamera Tarama Alanı */
+        .scanner-container {
+            width: 100%;
+            max-width: 350px;
+            margin: 10px auto;
+            border: 2px dashed #4a86e8;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none;
+            background: #000;
+            position: relative;
+        }
+
+        .close-scanner {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(217, 83, 79, 0.9);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        /* Kart Ekleme Paneli (Katalog Üstü) */
+        .katalog-add-box {
+            background: #ffffff;
+            border: 1px solid #b4c6e7;
+            padding: 15px;
+            border-radius: 8px;
             margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .katalog-add-box h4 {
+            color: #4a86e8;
+            margin-bottom: 10px;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        /* Hızlı Kart Enjekte Formu */
+        .hidden-inject-form {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .hidden-inject-form input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
 
         /* Paneller */
@@ -174,26 +266,6 @@
             display: none;
         }
 
-        .fast-add-box {
-            background: #fff3cd;
-            border: 1px solid #ffeeba;
-            color: #856404;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: none;
-        }
-
-        .fast-add-box input {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        /* ✏️ Düzenleme Paneli Stili */
         .edit-box {
             background: #e2f0d9;
             border: 1px solid #b4c6e7;
@@ -355,19 +427,22 @@
                 <input type="text" class="input-text" id="barcodeInput" placeholder="Barkod okutun veya yazın..." oninput="otomatikUrunGetir()">
                 <button class="clear-btn" onclick="temizleStokEkran()">⌫</button>
             </div>
+            <button class="camera-trigger-btn" onclick="kameraAc('stok-detay-kamera', 'barcodeInput', 'detay')">
+                <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png" alt="Kamera">
+            </button>
         </div>
 
-        <button class="sm-btn" onclick="urunGetirManuel()">Stok Getir</button>
-
-        <div class="fast-add-box" id="fastAddPanel">
-            <strong>✨ SİSTEMDE OLMAYAN GERÇEK BARKOD ALGILANDI!</strong>
-            <p style="font-size: 11px; margin-top:3px;">Lütfen dükkandaki bu ürünün adını ve ilk fiyatını verip sisteme enjekte edin:</p>
-            <input type="text" id="fastAddName" placeholder="Ürün Adı (Örn: Coca Cola 1.5 Lt)">
-            <input type="text" id="fastAddPrice" placeholder="Satış Fiyatı (Örn: 45.00)">
-            <button class="action-btn btn-send" style="padding:8px;" onclick="canliSistemeEnjekteEt()">Sisteme Kaydet ve Aktif Et</button>
+        <div class="scanner-container" id="stok-detay-kamera">
+            <button class="close-scanner" onclick="kameraKapat()">Kapat</button>
+            <div id="reader-detay" style="width: 100%;"></div>
         </div>
 
-        <div class="error-display" id="errorPanel">⚠️ KART PASİF / KAPALI!<br><small>(Bu ürün katalogda var ancak kart durumu kapatılmıştır.)</small></div>
+        <div class="grid-buttons">
+            <button class="sm-btn" style="background-color:#5c93ed;" onclick="alert('Manuel Arama Açıldı')">Manuel Arama</button>
+            <button class="sm-btn" onclick="urunGetirManuel()">Getir</button>
+        </div>
+
+        <div class="error-display" id="errorPanel">⚠️ KART PASİF / KAPALI!</div>
         <div class="product-title-display" id="productTitle"></div>
 
         <div class="info-row"><div class="info-label">Birim :</div><div class="info-value" id="val-birim">-</div></div>
@@ -377,8 +452,33 @@
     </main>
 
     <main id="screen-stok-cards" class="app-content">
-        <h3 style="color:#4a86e8; margin-bottom:5px;">Sade Stok Kartları (Katalog)</h3>
-        <p style="font-size:12px; color:#666; margin-bottom:15px;">Ürünleri tablodan düzenleyebilir, silebilir veya durumunu değiştirebilirsiniz.</p>
+        
+        <div class="katalog-add-box">
+            <h4>✨ Yeni Ürün / Stok Kartı Ekle</h4>
+            <div class="barcode-group">
+                <div class="barcode-input-wrapper">
+                    <input type="text" class="input-text" id="katalogNewBarcode" placeholder="Yeni Barkod No yazın veya taratın...">
+                    <button class="clear-btn" onclick="document.getElementById('katalogNewBarcode').value=''">⌫</button>
+                </div>
+                <button class="camera-trigger-btn" onclick="kameraAc('katalog-ekle-kamera', 'katalogNewBarcode', 'katalog')">
+                    <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png" alt="Kamera">
+                </button>
+            </div>
+
+            <div class="scanner-container" id="katalog-ekle-kamera">
+                <button class="close-scanner" onclick="kameraKapat()">Kapat</button>
+                <div id="reader-katalog" style="width: 100%;"></div>
+            </div>
+
+            <button class="sm-btn" style="width:100%; border-radius:4px;" onclick="katalogUrunSorgula()">Stok Kartı Sistemde Sorgula</button>
+
+            <div class="hidden-inject-form" id="injectFormPanel">
+                <strong style="color:#856404; font-size:12px;">⚠️ BU BARKOD KATALOGDA YOK! YENİ KART TANIMLANIYOR:</strong>
+                <input type="text" id="injectName" placeholder="Ürün Adı (Örn: Coca Cola 1.5 Lt)">
+                <input type="text" id="injectPrice" placeholder="Satış Fiyatı (Örn: 45.00)">
+                <button class="action-btn btn-send" style="padding:10px;" onclick="katalog canliSistemeEnjekteEt()">✔ Stok Kartını Sisteme Kaydet</button>
+            </div>
+        </div>
 
         <div class="edit-box" id="editPanel">
             <strong>✏️ STOK KARTI DÜZENLEME PANELİ</strong>
@@ -393,7 +493,7 @@
             </div>
         </div>
         
-        <input type="text" class="search-box" id="katalogArama" placeholder="Barkod veya Ürün Adı ile katalogda ara..." oninput="katalogFiltrele()">
+        <input type="text" class="search-box" id="katalogArama" placeholder="Katalog içinde canlı ara..." oninput="katalogFiltrele()">
 
         <div style="overflow-x:auto;">
             <table class="card-table">
@@ -420,11 +520,12 @@
         ];
 
         let aktifMağazaVeritabani = [];
-        let tarananGeciciBarkod = "";
-        let duzenlenenUrunIndex = null; // Hangi satırın düzenlendiğini tutar
+        let html5QrcodeScanner = null;
+        let duzenlenenUrunIndex = null;
+        let tarananKatalogGeciciBarkod = "";
 
         function veritabaniniYukle() {
-            const hafizadakiVeri = localStorage.getItem('canli_erp_katalog_v4');
+            const hafizadakiVeri = localStorage.getItem('canli_erp_katalog_v5');
             if(hafizadakiVeri) {
                 aktifMağazaVeritabani = JSON.parse(hafizadakiVeri);
             } else {
@@ -434,15 +535,60 @@
         }
 
         function veritabaniniKaydet() {
-            localStorage.setItem('canli_erp_katalog_v4', JSON.stringify(aktifMağazaVeritabani));
+            localStorage.setItem('canli_erp_katalog_v5', JSON.stringify(aktifMağazaVeritabani));
         }
 
-        // Sorgulama Motoru
+        // ========================================================
+        // 📷 ENTEGRE KAMERA TARAYICI SİSTEMİ (ARKA KAMERA SEÇİLİ)
+        // ========================================================
+        function kameraAc(containerId, inputId, tip) {
+            kameraKapat(); // Eğer açık bir tarayıcı varsa önce temizle
+            
+            const container = document.getElementById(containerId);
+            container.style.display = "block";
+            
+            const readerId = tip === 'detay' ? 'reader-detay' : 'reader-katalog';
+
+            html5QrcodeScanner = new Html5Qrcode(readerId);
+            html5QrcodeScanner.start(
+                { facingMode: "environment" }, // Doğrudan arka kamerayı açar
+                { fps: 10, qrbox: { width: 250, height: 150 } },
+                (decodedText) => {
+                    document.getElementById(inputId).value = decodedText;
+                    kameraKapat();
+                    if(tip === 'detay') {
+                        urunSorgula(decodedText);
+                    } else {
+                        katalogUrunSorgula();
+                    }
+                },
+                (errorMessage) => { /* Tarama esnasındaki anlık hatalar yutulur */ }
+            ).catch(err => {
+                alert("Kamera başlatılamadı veya izin verilmedi!");
+                container.style.display = "none";
+            });
+        }
+
+        function kameraKapat() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    document.getElementById('stok-detay-kamera').style.display = "none";
+                    document.getElementById('katalog-ekle-kamera').style.display = "none";
+                    html5QrcodeScanner = null;
+                }).catch(() => {
+                    document.getElementById('stok-detay-kamera').style.display = "none";
+                    document.getElementById('katalog-ekle-kamera').style.display = "none";
+                    html5QrcodeScanner = null;
+                });
+            }
+        }
+
+        // ========================================================
+        // 🔍 STOK DETAY EKRANI SORGULAMA MOTORU
+        // ========================================================
         function otomatikUrunGetir() {
             const code = document.getElementById('barcodeInput').value.trim();
-            if(code.length >= 8) {
-                urunSorgula(code);
-            }
+            if(code.length >= 8) urunSorgula(code);
         }
 
         function urunGetirManuel() {
@@ -453,21 +599,18 @@
         function urunSorgula(girilenBarkod) {
             const errorPanel = document.getElementById('errorPanel');
             const productTitle = document.getElementById('productTitle');
-            const fastAddPanel = document.getElementById('fastAddPanel');
             
             errorPanel.style.display = "none";
             productTitle.style.display = "none";
-            fastAddPanel.style.display = "none";
             resetInfolar();
 
             if(!girilenBarkod) return;
 
             const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenBarkod);
 
+            // İstediğin Değişiklik: Bilinmeyen barkod gelirse doğrudan uyarı veriyor
             if(!urun) {
-                tarananGeciciBarkod = girilenBarkod;
-                fastAddPanel.style.display = "block";
-                document.getElementById('fastAddName').focus();
+                alert("Stok bulunamamıştır!");
                 return;
             }
 
@@ -484,9 +627,36 @@
             document.getElementById('val-mensei').innerText = "Türkiye";
         }
 
+        // ========================================================
+        // 📥 SADE STOK KARTLARI - YENİ KART SORGULAMA VE ENJEKTE
+        // ========================================================
+        function katalogUrunSorgula() {
+            const girilenBarkod = document.getElementById('katalogNewBarcode').value.trim();
+            const injectPanel = document.getElementById('injectFormPanel');
+            injectPanel.style.display = "none";
+
+            if(!girilenBarkod) {
+                alert("Lütfen önce sorgulanacak barkodu yazın veya taratın!");
+                return;
+            }
+
+            const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenBarkod);
+
+            if(urun) {
+                alert(`Bu ürün zaten katalogda kayıtlı:\n"${urun.adi}"`);
+                // Tabloda o ürünü aratıp gösterelim
+                document.getElementById('katalogArama').value = girilenBarkod;
+                katalogFiltrele();
+            } else {
+                tarananKatalogGeciciBarkod = girilenBarkod;
+                injectPanel.style.display = "block";
+                document.getElementById('injectName').focus();
+            }
+        }
+
         function canliSistemeEnjekteEt() {
-            const isim = document.getElementById('fastAddName').value.trim();
-            const fiyat = document.getElementById('fastAddPrice').value.trim() || "0.00";
+            const isim = document.getElementById('injectName').value.trim();
+            const fiyat = document.getElementById('injectPrice').value.trim() || "0.00";
 
             if(!isim) {
                 alert("Lütfen ürünün gerçek adını yazın!");
@@ -494,7 +664,7 @@
             }
 
             const yeniUrun = {
-                barkod: tarananGeciciBarkod,
+                barkod: tarananKatalogGeciciBarkod,
                 adi: isim,
                 birim: "Adet",
                 miktar: 0,
@@ -505,16 +675,17 @@
             aktifMağazaVeritabani.unshift(yeniUrun);
             veritabaniniKaydet();
 
-            document.getElementById('fastAddName').value = "";
-            document.getElementById('fastAddPrice').value = "";
-            document.getElementById('fastAddPanel').style.display = "none";
+            document.getElementById('injectName').value = "";
+            document.getElementById('injectPrice').value = "";
+            document.getElementById('katalogNewBarcode').value = "";
+            document.getElementById('injectFormPanel').style.display = "none";
 
-            urunSorgula(tarananGeciciBarkod);
-            alert(`"${isim}" ürünü başarıyla sisteme enjekte edildi!`);
+            stokKartlariniListele();
+            alert(`"${isim}" başarıyla kataloğa eklendi!`);
         }
 
         // ========================================================
-        // 🎛️ TABLO VE YENİ İŞLEM BUTONLARI (DÜZENLE - SİL)
+        // 🎛️ TABLO YÖNETİMİ (LİSTELEME - DÜZENLEME - SİLME)
         // ========================================================
         function stokKartlariniListele(filtreMetni = "") {
             const govde = document.getElementById('stokKartlariGövde');
@@ -553,21 +724,17 @@
             });
         }
 
-        // ✏️ DÜZENLEME MODU KOMUTLARI
         function duzenlemeModunuAc(index) {
             duzenlenenUrunIndex = index;
             const urun = aktifMağazaVeritabani[index];
-            
             document.getElementById('editBarcodeField').value = urun.barkod;
             document.getElementById('editNameField').value = urun.adi;
-            
             document.getElementById('editPanel').style.display = "block";
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // Sayfa başına yumuşak kaydır paneli görsün
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function stokKartiniGuncelle() {
             if(duzenlenenUrunIndex === null) return;
-
             const yeniBarkod = document.getElementById('editBarcodeField').value.trim();
             const yeniIsim = document.getElementById('editNameField').value.trim();
 
@@ -576,16 +743,11 @@
                 return;
             }
 
-            // Hafızadaki eski değerleri yenileriyle değiştiriyoruz
             aktifMağazaVeritabani[duzenlenenUrunIndex].barkod = yeniBarkod;
             aktifMağazaVeritabani[duzenlenenUrunIndex].adi = yeniIsim;
-
             veritabaniniKaydet();
             duzenlemeKapat();
-            
-            const aramaMetni = document.getElementById('katalogArama').value.toLowerCase().trim();
-            stokKartlariniListele(aramaMetni);
-
+            stokKartlariniListele();
             alert("Stok kartı başarıyla güncellendi!");
         }
 
@@ -594,27 +756,16 @@
             duzenlenenUrunIndex = null;
         }
 
-        // 🗑️ SİLME KOMUTU
         function urunKalıcıSil(index) {
             const urun = aktifMağazaVeritabani[index];
-            const onay = confirm(`"${urun.adi}" isimli ürünü katalogdan tamamen silmek istediğinize emin misiniz?\nBu işlem geri alınamaz!`);
-            
+            const onay = confirm(`"${urun.adi}" isimli ürünü katalogdan tamamen silmek istediğinize emin misiniz?`);
             if(onay) {
-                // Diziden o ürünü çıkart
                 aktifMağazaVeritabani.splice(index, 1);
                 veritabaniniKaydet();
-                
-                // Eğer silinen ürün o esnada düzenleme panelinde açıksa paneli kapat
-                if(duzenlenenUrunIndex === index) {
-                    duzenlemeKapat();
-                }
-
-                const aramaMetni = document.getElementById('katalogArama').value.toLowerCase().trim();
-                stokKartlariniListele(aramaMetni);
+                stokKartlariniListele();
             }
         }
 
-        // Diğer Standart Tetikleyiciler
         function katalogFiltrele() {
             const metin = document.getElementById('katalogArama').value.toLowerCase().trim();
             stokKartlariniListele(metin);
@@ -623,32 +774,27 @@
         function durumDegistir(index) {
             aktifMağazaVeritabani[index].aktif = !aktifMağazaVeritabani[index].aktif;
             veritabaniniKaydet();
-            const aramaMetni = document.getElementById('katalogArama').value.toLowerCase().trim();
-            stokKartlariniListele(aramaMetni);
         }
 
         function fiyatVeAdetGonder(index) {
             const yeniFiyat = document.getElementById(`price-${index}`).value.trim();
             const yeniAdet = parseInt(document.getElementById(`qty-${index}`).value) || 0;
-
             aktifMağazaVeritabani[index].fiyat = yeniFiyat;
             aktifMağazaVeritabani[index].miktar = yeniAdet;
-
             veritabaniniKaydet();
-            const aramaMetni = document.getElementById('katalogArama').value.toLowerCase().trim();
-            stokKartlariniListele(aramaMetni);
-            
-            alert(`Sistem Güncellendi!\n${aktifMağazaVeritabani[index].adi}\nFiyat: ${yeniFiyat} TL\nStok: ${yeniAdet} Adet`);
+            alert("Sistem Güncellendi!");
         }
 
         function ekranDegistir(screenId) {
+            kameraKapat(); // Ekran değişirken kamera açık kaldıysa kapat
             const screens = document.querySelectorAll('.app-content');
             screens.forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
 
             if(screenId === 'screen-stok-cards') {
                 document.getElementById('katalogArama').value = "";
-                duzenlemeKapat(); // Ekran değişince açık düzenleme paneli varsa kapansın
+                document.getElementById('injectFormPanel').style.display = "none";
+                duzenlemeKapat();
                 stokKartlariniListele();
             }
         }
@@ -657,7 +803,6 @@
             document.getElementById('barcodeInput').value = '';
             document.getElementById('errorPanel').style.display = "none";
             document.getElementById('productTitle').style.display = "none";
-            document.getElementById('fastAddPanel').style.display = "none";
             resetInfolar();
         }
 
