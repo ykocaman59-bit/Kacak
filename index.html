@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeknoERP Stok Yönetimi - Gelişmiş Klon</title>
+    <title>TeknoERP Tam Klon</title>
     <style>
         /* Genel Uygulama Sıfırlamaları */
         * {
@@ -65,7 +65,60 @@
             display: block;
         }
 
-        /* --- STOK DETAY ANA EKRANI --- */
+        /* --- 1. EKRAN: ANA MENÜ TASARIMI --- */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .menu-btn {
+            background-color: #5c93ed;
+            color: white;
+            border: none;
+            padding: 25px 15px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .menu-btn.cyan-btn {
+            background-color: #5bc0de;
+        }
+
+        .logout-container {
+            grid-column: span 2;
+            display: flex;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .logout-btn {
+            background-color: #f05a5b;
+            color: white;
+            border: none;
+            width: 55%;
+            padding: 14px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 40px;
+            color: #4a86e8;
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+            font-size: 15px;
+        }
+
+        /* --- 2. EKRAN: GELİŞMİŞ STOK DETAY İÇERİĞİ --- */
         .screen-top-bar {
             display: flex;
             justify-content: space-between;
@@ -85,7 +138,7 @@
             outline: none;
         }
 
-        /* İşlemler Butonu ve Açılır Menüsü */
+        /* İşlemler Menü Butonu ve Açılır Yapı */
         .action-menu-container {
             position: relative;
         }
@@ -126,7 +179,7 @@
             background-color: #f1f1f1;
         }
 
-        /* Barkod Alanı */
+        /* Barkod Bölümü */
         .barcode-group {
             display: flex;
             align-items: center;
@@ -172,15 +225,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
         }
 
-        /* Orta Butonlar */
+        /* Fonksiyon Butonları */
         .row-buttons {
             display: flex;
             gap: 10px;
             margin-bottom: 25px;
-            justify-content: space-between;
         }
 
         .sm-btn {
@@ -201,7 +252,7 @@
             font-size: 16px;
         }
 
-        /* Bilgi Satırları */
+        /* Hizalı Bilgi Satırları */
         .info-row {
             display: flex;
             margin-bottom: 14px;
@@ -222,7 +273,7 @@
             font-weight: 500;
         }
 
-        /* Seçim Alanları (Dizayn Seç vb.) */
+        /* Yan Yana Seçim Satırları */
         .select-row {
             display: flex;
             justify-content: space-between;
@@ -235,7 +286,7 @@
             padding: 8px 12px;
             border-radius: 4px;
             background: white;
-            min-width: 130px;
+            min-width: 140px;
             font-size: 14px;
             color: #555;
             cursor: pointer;
@@ -259,12 +310,22 @@
             font-size: 14px;
         }
 
-        /* Alt Sabit Butonlar */
+        /* Alt Alan Butonları */
         .bottom-actions-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: auto 1fr;
             gap: 12px;
             margin-top: 30px;
+        }
+
+        .qty-input {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 15px;
+            outline: none;
         }
 
         .bottom-btn {
@@ -278,67 +339,7 @@
             cursor: pointer;
         }
 
-        .qty-input {
-            width: 70px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 15px;
-        }
-
-        /* --- DIZAYN SEC MODAL (AÇILIR PENCERE - Görsel 2) --- */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.4);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-box {
-            background: white;
-            width: 85%;
-            max-width: 320px;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .modal-item {
-            padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #eee;
-            font-size: 16px;
-            color: #333;
-            cursor: pointer;
-        }
-
-        .modal-item:last-child {
-            border-bottom: none;
-        }
-
-        .radio-circle {
-            width: 18px;
-            height: 18px;
-            border: 2px solid #555;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .modal-item.selected .radio-circle {
-            border-color: #4a86e8;
-            background: radial-gradient(circle, #4a86e8 40%, transparent 50%);
-        }
-
-        /* --- MANUEL ARAMA EKRANI (Görsel 4) --- */
+        /* --- MANUEL ARAMA PANELİ --- */
         .search-top-row {
             display: flex;
             gap: 10px;
@@ -408,18 +409,18 @@
         }
 
         .table-body {
-            height: 200px;
+            height: 180px;
             text-align: center;
             color: #999;
-            padding-top: 20px;
+            padding-top: 30px;
             font-size: 14px;
         }
 
-        /* --- KAMERA VİZÖRÜ SİMÜLASYONU (Görsel 5) --- */
+        /* --- KAMERA ARKA PLAN SİMÜLASYONU --- */
         .camera-screen {
             display: none;
             position: fixed;
-            top: 50px; /* Header altı */
+            top: 50px;
             left: 0;
             width: 100%;
             height: calc(100vh - 50px);
@@ -445,17 +446,64 @@
             height: 180px;
             border: 1px solid rgba(255,255,255,0.3);
             background: rgba(255, 255, 255, 0.03);
-            position: relative;
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6); /* Vizör efekti */
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
         }
 
-        /* Alt Kapatma Alanı */
         .cam-footer {
             color: white;
             font-size: 14px;
             margin-bottom: 60px;
-            letter-spacing: 0.5px;
             cursor: pointer;
+        }
+
+        /* --- DIZAYN SEC POPUP (MODAL) --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-box {
+            background: white;
+            width: 85%;
+            max-width: 320px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .modal-item {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            font-size: 16px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .modal-item:last-child {
+            border-bottom: none;
+        }
+
+        .radio-circle {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #555;
+            border-radius: 50%;
+        }
+
+        .modal-item.selected .radio-circle {
+            border-color: #4a86e8;
+            background: radial-gradient(circle, #4a86e8 40%, transparent 50%);
         }
     </style>
 </head>
@@ -463,16 +511,30 @@
 
     <header class="app-header">
         <span class="status">Online</span>
-        <span class="home-icon" onclick="pencereleriKapat()">🏠</span>
+        <span class="home-icon" onclick="anaMenuyeDon()">🏠</span>
         <span class="more-icon">•••</span>
     </header>
 
-    <main id="main-stok-screen" class="app-content active">
+    <main id="screen-menu" class="app-content active">
+        <div class="menu-grid">
+            <button class="menu-btn" onclick="ekranDegistir('screen-stok-detail')">Stok Detay</button>
+            <button class="menu-btn cyan-btn" onclick="alert('Sayım Fişi Modülü')">Sayım Fişi</button>
+            <button class="menu-btn" onclick="alert('Deposevk Modülü')">Deposevk</button>
+            <button class="menu-btn cyan-btn" onclick="alert('Satış İrsaliyesi Modülü')">Satış İrsaliyesi</button>
+            <button class="menu-btn" onclick="alert('Alış İrsaliyesi Modülü')">Alış İrsaliyesi</button>
+        </div>
+        <div class="logout-container">
+            <button class="logout-btn" onclick="alert('Çıkış yapılıyor...')">Çıkış</button>
+        </div>
+        <a href="http://www.teknoerp.com.tr" target="_blank" class="footer-link">www.teknoerp.com.tr</a>
+    </main>
+
+    <main id="screen-stok-detail" class="app-content">
         <div class="screen-top-bar">
             <select class="dropdown"><option>BATTALGAZİ</option></select>
             
             <div class="action-menu-container">
-                <button class="action-btn" onclick="toggleActionMenu()">İşlemler ▾</button>
+                <button class="action-btn" onclick="toggleActionMenu(event)">İşlemler ▾</button>
                 <div class="action-dropdown-content" id="actionsMenu">
                     <a href="#" onclick="menuSec('Yeni Evrak')">Yeni Evrak</a>
                     <a href="#" onclick="menuSec('Barkod Detay')">Barkod Detay</a>
@@ -486,7 +548,7 @@
         <div class="barcode-group">
             <div class="barcode-label">Barkod :</div>
             <div class="barcode-input-wrapper">
-                <input type="text" class="input-text" id="barcodeInput" placeholder="">
+                <input type="text" class="input-text" id="barcodeInput">
                 <button class="clear-btn" onclick="document.getElementById('barcodeInput').value=''">⌫</button>
             </div>
         </div>
@@ -494,45 +556,45 @@
         <div class="row-buttons">
             <button class="sm-btn" onclick="openManuelArama()">Manuel Arama</button>
             <button class="sm-btn cam-btn" onclick="openKamera()">📷</button>
-            <button class="sm-btn" onclick="alert('Veri getiriliyor...')">Getir</button>
+            <button class="sm-btn" onclick="alert('Getiriliyor...')">Getir</button>
         </div>
 
-        <div class="info-row"><div class="info-label">Birim :</div><div class="info-value" id="val-birim">-</div></div>
-        <div class="info-row"><div class="info-label">Miktar :</div><div class="info-value" id="val-miktar">-</div></div>
-        <div class="info-row"><div class="info-label">Birim Fiyatı :</div><div class="info-value" id="val-fiyat">-</div></div>
-        <div class="info-row"><div class="info-label">Menşei :</div><div class="info-value" id="val-mensei">-</div></div>
+        <div class="info-row"><div class="info-label">Birim :</div><div class="info-value">-</div></div>
+        <div class="info-row"><div class="info-label">Miktar :</div><div class="info-value">-</div></div>
+        <div class="info-row"><div class="info-label">Birim Fiyatı :</div><div class="info-value">-</div></div>
+        <div class="info-row"><div class="info-label">Menşei :</div><div class="info-value">-</div></div>
 
         <div class="select-row">
             <div class="info-row" style="margin-bottom:0;"><div class="info-label">Dizayn Seç:</div></div>
-            <div class="fake-select-box" id="dizaynSeçiliAlan" onclick="openDizaynModal()">Raf Etiket</div>
+            <div class="fake-select-box" id="dizaynSeciliYazi" onclick="openDizaynModal()">Raf Etiket</div>
         </div>
 
         <div class="select-row" style="margin-top: 10px;">
             <div class="info-row" style="margin-bottom:0;"><div class="info-label">Diğer Fiyat:</div></div>
             <div class="info-value">-</div>
-            <div class="info-row" style="margin-bottom:0; margin-left: 20px;"><div class="info-label" style="width:70px;">Fiyat Seç:</div></div>
+            <div class="info-row" style="margin-bottom:0; margin-left: 15px;"><div class="info-label" style="width:70px;">Fiyat Seç:</div></div>
             <select class="dropdown" style="min-width:90px; padding: 5px;"><option></option></select>
         </div>
 
         <div class="select-row" style="margin-top: 10px;">
             <div class="info-row" style="margin-bottom:0;"><div class="info-label">Stok Resmi:</div></div>
             <div class="checkbox-group">
-                <input type="checkbox" id="otoEkle">
-                <label for="otoEkle">Oto. Ekle</label>
+                <input type="checkbox" id="otoEkleCheck">
+                <label for="otoEkleCheck">Oto. Ekle</label>
             </div>
         </div>
 
         <div class="bottom-actions-grid">
             <input type="number" class="qty-input" value="1">
-            <button class="bottom-btn" style="background-color: #4a86e8;">Ekle</button>
+            <button class="bottom-btn">Ekle</button>
             <button class="bottom-btn" style="grid-column: span 2; margin-top: 5px;">İşlem Detayları</button>
         </div>
     </main>
 
-    <main id="manuel-arama-screen" class="app-content">
+    <main id="screen-manuel-arama" class="app-content">
         <div class="search-top-row">
-            <button class="back-btn" onclick="pencereleriKapat()">←</button>
-            <select class="dropdown" style="min-width: 90px;"><option>ADI</option></select>
+            <button class="back-btn" onclick="backToStokDetail()">←</button>
+            <select class="dropdown" style="min-width: 85px;"><option>ADI</option></select>
             <div class="search-wrapper">
                 <input type="text" class="search-input">
                 <button class="search-go-btn">🔍</button>
@@ -551,7 +613,7 @@
         </div>
     </main>
 
-    <div id="camera-simulation" class="camera-screen" onclick="pencereleriKapat()">
+    <div id="camera-simulation" class="camera-screen" onclick="backToStokDetail()">
         <div class="cam-top-icon">📷</div>
         <div class="scan-window"></div>
         <div class="cam-footer">Barkod Okutunuz</div>
@@ -559,78 +621,77 @@
 
     <div class="modal-overlay" id="dizaynModal" onclick="closeDizaynModal()">
         <div class="modal-box" onclick="event.stopPropagation()">
-            <div class="modal-item selected" onclick="dizaynSec('Raf Etiket', this)"><span>Raf Etiket</span><span class="radio-circle"></span></div>
-            <div class="modal-item" onclick="dizaynSec('Sarı Etiket', this)"><span>Sarı Etiket</span><span class="radio-circle"></span></div>
-            <div class="modal-item" onclick="dizaynSec('Sarı İNDİRİM', this)"><span>Sarı İNDİRİM</span><span class="radio-circle"></span></div>
-            <div class="modal-item" onclick="dizaynSec('A4 ETİKET', this)"><span>A4 ETİKET</span><span class="radio-circle"></span></div>
-            <div class="modal-item" onclick="dizaynSec('A4 İNDİRİM', this)"><span>A4 İNDİRİM</span><span class="radio-circle"></span></div>
+            <div class="modal-item selected" onclick="dizaynSecimYap('Raf Etiket', this)"><span>Raf Etiket</span><span class="radio-circle"></span></div>
+            <div class="modal-item" onclick="dizaynSecimYap('Sarı Etiket', this)"><span>Sarı Etiket</span><span class="radio-circle"></span></div>
+            <div class="modal-item" onclick="dizaynSecimYap('Sarı İNDİRİM', this)"><span>Sarı İNDİRİM</span><span class="radio-circle"></span></div>
+            <div class="modal-item" onclick="dizaynSecimYap('A4 ETİKET', this)"><span>A4 ETİKET</span><span class="radio-circle"></span></div>
+            <div class="modal-item" onclick="dizaynSecimYap('A4 İNDİRİM', this)"><span>A4 İNDİRİM</span><span class="radio-circle"></span></div>
         </div>
     </div>
 
     <script>
-        // İşlemler Menüsünü Aç / Kapat
-        function toggleActionMenu() {
+        // Sayfa Değiştirme Fonksiyonu
+        function ekranDegistir(screenId) {
+            const screens = document.querySelectorAll('.app-content');
+            screens.forEach(s => s.classList.remove('active'));
+            
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function anaMenuyeDon() {
+            // Kamera ve tüm alt pencereleri emniyete alıp ana menüye döner
+            document.getElementById('camera-simulation').style.display = 'none';
+            document.getElementById('dizaynModal').style.display = 'none';
+            ekranDegistir('screen-menu');
+        }
+
+        // Stok Detay İçindeki Geçişler
+        function openManuelArama() {
+            ekranDegistir('screen-manuel-arama');
+        }
+
+        function openKamera() {
+            document.getElementById('camera-simulation').style.display = 'flex';
+        }
+
+        function backToStokDetail() {
+            document.getElementById('camera-simulation').style.display = 'none';
+            ekranDegistir('screen-stok-detail');
+        }
+
+        // İşlemler Menü Açılışı
+        function toggleActionMenu(e) {
+            e.stopPropagation();
             const menu = document.getElementById('actionsMenu');
             menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
         }
 
         function menuSec(isim) {
-            alert(isim + " seçildi.");
+            alert(isim + " tıklandı.");
             document.getElementById('actionsMenu').style.display = 'none';
         }
 
-        // Dizayn Seçme Seçenekleri (Modal Kontrolü)
+        // Dizayn Pop-up Kontrolleri
         function openDizaynModal() {
             document.getElementById('dizaynModal').style.display = 'flex';
         }
+
+        document.addEventListener('click', function() {
+            document.getElementById('actionsMenu').style.display = 'none';
+        });
 
         function closeDizaynModal() {
             document.getElementById('dizaynModal').style.display = 'none';
         }
 
-        function dizaynSec(deger, element) {
-            document.getElementById('dizaynSeçiliAlan').innerText = deger;
+        function dizaynSecimYap(deger, element) {
+            document.getElementById('dizaynSeciliYazi').innerText = deger;
             
-            // Seçili işareti güncelleme
             const items = document.querySelectorAll('.modal-item');
-            items.forEach(item => item.classList.remove('selected'));
+            items.forEach(i => i.classList.remove('selected'));
             element.classList.add('selected');
             
             closeDizaynModal();
-        }
-
-        // Ekran ve Katman Geçişleri
-        function openManuelArama() {
-            pencereleriKapat();
-            document.getElementById('main-stok-screen').classList.remove('active');
-            document.getElementById('manuel-arama-screen').classList.add('active');
-        }
-
-        function openKamera() {
-            pencereleriKapat();
-            document.getElementById('camera-simulation').style.display = 'flex';
-        }
-
-        function pencereleriKapat() {
-            // Tüm modülleri ve simülasyonları ilk haline döndürür
-            document.getElementById('manuel-arama-screen').classList.remove('active');
-            document.getElementById('camera-simulation').style.display = 'none';
-            document.getElementById('dizaynModal').style.display = 'none';
-            document.getElementById('actionsMenu').style.display = 'none';
-            document.getElementById('main-stok-screen').classList.add('active');
-        }
-
-        // Dışarı tıklayınca İşlemler menüsünü kapatma kontrolü
-        window.onclick = function(event) {
-            if (!event.target.matches('.action-btn')) {
-                const dropdowns = document.getElementsByClassName("action-dropdown-content");
-                for (let i = 0; i < dropdowns.length; i++) {
-                    let openDropdown = dropdowns[i];
-                    if (openDropdown.style.display === 'block') {
-                        openDropdown.style.display = 'none';
-                    }
-                }
-            }
         }
     </script>
 </body>
