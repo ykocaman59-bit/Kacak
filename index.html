@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeknoERP - Gerçek Zamanlı Akıllı ERP</title>
+    <title>TeknoERP - Ön Tanımlı Master Katalog</title>
     <style>
         * {
             margin: 0;
@@ -21,7 +21,7 @@
             user-select: none;
         }
 
-        /* Üst Sabit Bar */
+        /* Üst Sabit Header */
         .app-header {
             background-color: #4a86e8;
             color: white;
@@ -56,7 +56,7 @@
             display: block;
         }
 
-        /* 1. EKRAN: ANA MENÜ */
+        /* ANA MENÜ GÖRÜNÜMÜ */
         .menu-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -76,11 +76,11 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        .menu-btn.green-btn {
-            background-color: #5cb85c;
-        }
+        .menu-btn.green-btn { background-color: #5cb85c; }
+        .menu-btn.cyan-btn { background-color: #5bc0de; }
+        .menu-btn.red-btn { background-color: #d9534f; grid-column: span 2; margin-top: 10px;}
 
-        /* 2. EKRAN: STOK DETAY */
+        /* STOK DETAY SAYFASI */
         .screen-top-bar {
             display: flex;
             justify-content: space-between;
@@ -140,12 +140,6 @@
             cursor: pointer;
         }
 
-        .row-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
         .sm-btn {
             background-color: #4a86e8;
             color: white;
@@ -154,15 +148,16 @@
             border-radius: 20px;
             font-size: 14px;
             cursor: pointer;
-            flex: 1;
+            width: 100%;
             text-align: center;
+            margin-bottom: 20px;
         }
 
-        /* Durum Panelleri */
+        /* Hata / Uyarı Panelleri */
         .error-display {
             background-color: #f2dede;
             color: #a94442;
-            padding: 10px;
+            padding: 12px;
             border-radius: 4px;
             border-left: 5px solid #d9534f;
             margin-bottom: 15px;
@@ -172,9 +167,9 @@
 
         .product-title-display {
             background: #eef2f7;
-            padding: 8px;
+            padding: 10px;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 15px;
             color: #2c3e50;
             border-left: 4px solid #5cb85c;
             margin-bottom: 15px;
@@ -201,24 +196,11 @@
             font-weight: bold;
         }
 
-        /* 3. EKRAN: GENİŞ STOK KARTLARI PANELİ */
-        .card-manager-box {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
-
-        .manager-input-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .manager-input {
-            padding: 8px;
+        /* STOK KARTLARI TABLOSU */
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 14px;
@@ -233,7 +215,7 @@
 
         .card-table th, .card-table td {
             border: 1px solid #ddd;
-            padding: 8px 4px;
+            padding: 10px 4px;
             text-align: center;
         }
 
@@ -242,7 +224,7 @@
             color: white;
         }
 
-        /* Switch Butonu */
+        /* Switch (Açma/Kapama) Sürgüsü */
         .switch {
             position: relative;
             display: inline-block;
@@ -276,8 +258,8 @@
         input:checked + .slider { background-color: #5cb85c; }
         input:checked + .slider:before { transform: translateX(18px); }
 
-        .inline-edit-input {
-            width: 55px;
+        .inline-input {
+            width: 60px;
             padding: 4px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -289,7 +271,7 @@
             background: #5cb85c;
             color: white;
             border: none;
-            padding: 4px 8px;
+            padding: 5px 8px;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
@@ -299,7 +281,7 @@
 <body>
 
     <header class="app-header">
-        <span class="status">Live ERP</span>
+        <span class="status">Online</span>
         <span class="home-icon" onclick="ekranDegistir('screen-menu')">🏠</span>
         <span>•••</span>
     </header>
@@ -307,29 +289,33 @@
     <main id="screen-menu" class="app-content active">
         <div class="menu-grid">
             <button class="menu-btn" onclick="ekranDegistir('screen-stok-detail')">Stok Detay</button>
-            <button class="menu-btn green-btn" onclick="ekranDegistir('screen-stok-cards')">Stok Kartları (Yönetim)</button>
+            <button class="menu-btn green-btn" onclick="ekranDegistir('screen-stok-cards')">Sade Stok Kartları</button>
+            <button class="menu-btn cyan-btn" onclick="alert('Sayım Fişi Açıldı')">Sayım Fişi</button>
+            <button class="menu-btn" onclick="alert('Deposevk Açıldı')">Deposevk</button>
+            <button class="menu-btn cyan-btn" onclick="alert('Satış İrsaliyesi Açıldı')">Satış İrsaliyesi</button>
+            <button class="menu-btn" onclick="alert('Alış İrsaliyesi Açıldı')">Alış İrsaliyesi</button>
+            <button class="menu-btn red-btn">Çıkış</button>
         </div>
+        <div style="text-align:center; margin-top:20px; color:#4a86e8; font-weight:bold; font-size:14px;">www.teknoerp.com.tr</div>
     </main>
 
     <main id="screen-stok-detail" class="app-content">
         <div class="screen-top-bar">
             <select class="dropdown"><option>BATTALGAZİ</option></select>
-            <span style="color:#666; font-size:12px;">Fiyat/Stok Kontrol</span>
+            <select class="dropdown" style="background:#4a86e8; color:white;"><option>İşlemler ▾</option></select>
         </div>
 
         <div class="barcode-group">
             <div class="barcode-label">Barkod :</div>
             <div class="barcode-input-wrapper">
-                <input type="text" class="input-text" id="barcodeInput" placeholder="Barkod okutun veya yazın...">
+                <input type="text" class="input-text" id="barcodeInput" placeholder="Barkod okutun veya yazın..." oninput="otomatikUrunGetir()">
                 <button class="clear-btn" onclick="temizleStokEkran()">⌫</button>
             </div>
         </div>
 
-        <div class="row-buttons">
-            <button class="sm-btn" onclick="urunGetir()">Stok Getir</button>
-        </div>
+        <button class="sm-btn" onclick="urunGetir Manuel()">Stok Getir</button>
 
-        <div class="error-display" id="errorPanel">⚠️ STOK BULUNAMADI! (Kart kapalı ya da aktif edilmemiş)</div>
+        <div class="error-display" id="errorPanel">⚠️ STOK BULUNAMADI!<br><small>(Bu ürün katalogda var ancak kartı kapatılmıştır)</small></div>
         <div class="product-title-display" id="productTitle"></div>
 
         <div class="info-row"><div class="info-label">Birim :</div><div class="info-value" id="val-birim">-</div></div>
@@ -339,21 +325,11 @@
     </main>
 
     <main id="screen-stok-cards" class="app-content">
-        <div class="card-manager-box">
-            <h4 style="color:#4a86e8;">Yeni Ürün / Stok Kartı Ekle</h4>
-            <p style="font-size:11px; color:#777;">Dünya barkodu sorgula veya elinle yeni kart tanımla:</p>
-            
-            <div class="manager-input-grid">
-                <input type="text" class="manager-input" id="newBarcode" placeholder="Barkod No">
-                <button class="send-btn" style="background:#4a86e8;" onclick="dunyaBarkodSorgula()">🌐 Dünyada Ara</button>
-                <input type="text" class="manager-input" id="newTitle" placeholder="Ürün Adı">
-                <input type="text" class="manager-input" id="newPrice" placeholder="Fiyat (Örn: 25.50)">
-                <input type="number" class="manager-input" id="newQty" placeholder="İlk Stok Adeti" value="0">
-                <button class="send-btn" style="grid-column: span 2; padding:8px;" onclick="manuelStokKartEkle()">➕ Stok Kartını Sisteme Kaydet</button>
-            </div>
-        </div>
+        <h3 style="color:#4a86e8; margin-bottom:5px;">Sade Stok Kartları (Katalog)</h3>
+        <p style="font-size:12px; color:#666; margin-bottom:15px;">Dünyadaki hazır barkod listesi aşağıdadır. İstediğin ürünü aç, fiyat ve adetini gönder!</p>
+        
+        <input type="text" class="search-box" id="katalogArama" placeholder="Barkod veya Ürün Adı ile katalogda ara..." oninput="katalogFiltrele()">
 
-        <h4 style="margin-bottom: 10px; color:#333;">Sistemdeki Aktif / Pasif Stok Kartları</h4>
         <div style="overflow-x:auto;">
             <table class="card-table">
                 <thead>
@@ -361,8 +337,8 @@
                         <th>Barkod / Ürün Adı</th>
                         <th>Fiyat (TL)</th>
                         <th>Stok Adet</th>
-                        <th>Aç/Kapat</th>
-                        <th>Gönder</th>
+                        <th>Kart Durumu</th>
+                        <th>Veri Gönder</th>
                     </tr>
                 </thead>
                 <tbody id="stokKartlariGövde">
@@ -373,47 +349,58 @@
 
     <script>
         // ========================================================
-        // 🌍 SİMÜLE EDİLMİŞ DÜNYA BARKOD HAVUZU (GLOBAL API)
+        // 🌍 HAZIR DÜNYA BARKOD KATALOĞU (ÖNDEN YÜKLENEN MASTER DATA)
         // ========================================================
-        const dunyaBarkodVeritabanı = {
-            "8690504012345": "Ülker Çikolatalı Gofret 36g",
-            "8690632001122": "Sütaş Ayran 1.5 Lt",
-            "8690526005544": "Coca Cola Orijinal Tat 2.5 Lt",
-            "8680001234567": "Doğuş Filiz Çay 1 Kg",
-            "8690504099887": "Eti Karam Gurme 50g",
-            "7622210812345": "Milka Sütlü Çikolata 100g",
-            "8690766000152": "Pınar Süt 1 Lt"
-        };
+        const hazirDunyaKatalogu = [
+            { barkod: "8690504012345", adi: "Ülker Çikolatalı Gofret 36g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690632001122", adi: "Sütaş Ayran 1.5 Lt", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690526005544", adi: "Coca Cola Orijinal Tat 2.5 Lt", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8680001234567", adi: "Doğuş Filiz Çay 1 Kg", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690504099887", adi: "Eti Karam Gurme 50g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "7622210812345", adi: "Milka Sütlü Çikolata 100g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690766000152", adi: "Pınar Süt 1 Lt", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690555021431", adi: "Lays Klasik Patates Cipsi Yoğurtlu", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8691234567890", adi: "Nutella Kakaolu Fındık Kreması 400g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
+            { barkod: "8690511101213", adi: "Eti Burçak Bisküvi 131g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false }
+        ];
+
+        let aktifMağazaVeritabani = [];
 
         // ========================================================
-        // 💾 LOKAL SİSTEM VERİ TABANI KONTROLLERİ (LocalStorage)
+        // 💾 VERİ TABANI YÖNETİMİ (LocalStorage)
         // ========================================================
-        let sistemStokKartlari = [];
-
-        // Sayfa ilk yüklendiğinde hafızadan verileri çek
-        function verileriYukle() {
-            const kayıtlıVeri = localStorage.getItem('erp_stok_kartlari');
-            if(kayıtlıVeri) {
-                sistemStokKartlari = JSON.parse(kayıtlıVeri);
+        function veritabaniniYukle() {
+            const hafizadakiVeri = localStorage.getItem('master_erp_katalog');
+            if(hafizadakiVeri) {
+                aktifMağazaVeritabani = JSON.parse(hafizadakiVeri);
             } else {
-                // İlk açılışta boş gelmesin diye 2 tane örnek kart ekleyelim
-                sistemStokKartlari = [
-                    { barkod: "8690504012345", adi: "Ülker Çikolatalı Gofret 36g", birim: "Adet", miktar: 150, fiyat: "12.50", aktif: true },
-                    { barkod: "8690632001122", adi: "Sütaş Ayran 1.5 Lt", birim: "Adet", miktar: 42, fiyat: "38.00", aktif: false }
-                ];
-                verileriKaydet();
+                // İlk defa açılıyorsa dünyadaki hazır listeyi mağaza veritabanına kopyala
+                aktifMağazaVeritabani = [...hazirDunyaKatalogu];
+                veritabaniniKaydet();
             }
         }
 
-        function verileriKaydet() {
-            localStorage.setItem('erp_stok_kartlari', JSON.stringify(sistemStokKartlari));
+        function veritabaniniKaydet() {
+            localStorage.setItem('master_erp_katalog', JSON.stringify(aktifMağazaVeritabani));
         }
 
         // ========================================================
-        // 🔍 STOK DETAY OKUMA MOTORU
+        // 🔍 STOK SORGULAMA KONTROLLERİ (Stok Detay Ekranı)
         // ========================================================
-        function urunGetir() {
-            const girilenBarkod = document.getElementById('barcodeInput').value.trim();
+        function otomatikUrunGetir() {
+            const code = document.getElementById('barcodeInput').value.trim();
+            // Barkod okuyucular hızlıca tamamladığında tetiklensin diye uzunluk kontrolü (opsiyonel)
+            if(code.length >= 13) {
+                urunSorgula(code);
+            }
+        }
+
+        function urunGetirManuel() {
+            const code = document.getElementById('barcodeInput').value.trim();
+            urunSorgula(code);
+        }
+
+        function urunSorgula(girilenBarkod) {
             const errorPanel = document.getElementById('errorPanel');
             const productTitle = document.getElementById('productTitle');
             
@@ -421,21 +408,18 @@
             productTitle.style.display = "none";
             resetInfolar();
 
-            if(!girilenBarkod) {
-                alert("Lütfen barkod girin!");
-                return;
-            }
+            if(!girilenBarkod) return;
 
-            // Kendi kayıtlı stok kartlarımızda ara
-            const urun = sistemStokKartlari.find(u => u.barkod === girilenBarkod);
+            // Hazır hafıza havuzundan ürünü bul
+            const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenBarkod);
 
-            // Koşul: Ürün sistemde yoksa veya "aktif" anahtarı kapalıysa "Stok Bulunamadı" de!
+            // KRİTİK ŞART: Ürün katalogda hiç yoksa YA DA katalogda var ama aktifliği kapalıysa (false) -> HATA VER!
             if(!urun || urun.aktif === false) {
                 errorPanel.style.display = "block";
                 return;
             }
 
-            // Kart açıksa adetler ve fiyatlar milisaniyede gelir
+            // Kart AÇIKSA bilgileri bas
             productTitle.style.display = "block";
             productTitle.innerHTML = `<b>Ürün Adı:</b> ${urun.adi}`;
             document.getElementById('val-birim').innerText = urun.birim;
@@ -445,72 +429,18 @@
         }
 
         // ========================================================
-        // ⚡ GERÇEK ZAMANLI DÜNYA BARKOD SORGULAMA (API Modeli)
+        // 🎛️ SADE STOK KARTLARI LİSTELEME VE FİYAT GÖNDERME
         // ========================================================
-        function dunyaBarkodSorgula() {
-            const bcode = document.getElementById('newBarcode').value.trim();
-            if(!bcode) { alert("Lütfen önce sorgulanacak barkodu yazın!"); return; }
-
-            // Dünya veritabanı nesnemizden ismi çekiyoruz
-            const globalIsim = dunyaBarkodVeritabanı[bcode];
-
-            if(globalIsim) {
-                document.getElementById('newTitle').value = globalIsim;
-                alert(`🌐 Küresel Havuzda Ürün Bulundu:\n${globalIsim}\n\nŞimdi fiyat ve adet girip sisteme kaydedebilirsiniz.`);
-            } else {
-                alert("🌐 Küresel havuzda bu barkod tanınmıyor fakat yine de elinizle isim verip yeni kart oluşturabilirsiniz!");
-            }
-        }
-
-        // Manuel Veya Bulunan Kartı Sisteme Ekleme
-        function manuelStokKartEkle() {
-            const barkod = document.getElementById('newBarcode').value.trim();
-            const adi = document.getElementById('newTitle').value.trim();
-            const fiyat = document.getElementById('newPrice').value.trim();
-            const miktar = parseInt(document.getElementById('newQty').value) || 0;
-
-            if(!barkod || !adi || !fiyat) {
-                alert("Lütfen Barkod, Ürün Adı ve Fiyat alanlarını doldurun!");
-                return;
-            }
-
-            // Aynı barkod zaten ekliyse uyarı ver
-            const kontrol = sistemStokKartlari.findIndex(u => u.barkod === barkod);
-            if(kontrol !== -1) {
-                alert("Bu ürün zaten stok kartlarınızda mevcut! Listeden güncelleyebilirsiniz.");
-                return;
-            }
-
-            // Yeni kartı havuza ekle (Varsayılan olarak AÇIK/AKTİF eklenir)
-            sistemStokKartlari.push({
-                barkod: barkod,
-                adi: adi,
-                birim: "Adet",
-                miktar: miktar,
-                fiyat: fiyat,
-                aktif: true
-            });
-
-            verileriKaydet();
-            stokKartlariniListele();
-            
-            // Giriş kutularını temizle
-            document.getElementById('newBarcode').value = "";
-            document.getElementById('newTitle').value = "";
-            document.getElementById('newPrice').value = "";
-            document.getElementById('newQty').value = "0";
-
-            alert("Stok Kartı Başarıyla Sisteme Gönderildi ve Açıldı!");
-        }
-
-        // ========================================================
-        // 🎛️ STOK KARTLARI LİSTELEME VE GÜNCELLEME (FİYAT GÖNDERME)
-        // ========================================================
-        function stokKartlariniListele() {
+        function stokKartlariniListele(filtreMetni = "") {
             const govde = document.getElementById('stokKartlariGövde');
             govde.innerHTML = "";
 
-            sistemStokKartlari.forEach((urun, index) => {
+            aktifMağazaVeritabani.forEach((urun, index) => {
+                // Arama kutusuna bir şey yazıldıysa filtreleme yap
+                if(filtreMetni && !urun.adi.toLowerCase().includes(filtreMetni) && !urun.barkod.includes(filtreMetni)) {
+                    return; 
+                }
+
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td style="text-align:left;">
@@ -518,48 +448,63 @@
                         <b>${urun.adi}</b>
                     </td>
                     <td>
-                        <input type="text" class="inline-edit-input" id="price-${index}" value="${urun.fiyat}">
+                        <input type="text" class="inline-input" id="price-${index}" value="${urun.fiyat}">
                     </td>
                     <td>
-                        <input type="number" class="inline-edit-input" id="qty-${index}" value="${urun.miktar}">
+                        <input type="number" class="inline-input" id="qty-${index}" value="${urun.miktar}">
                     </td>
                     <td>
                         <label class="switch">
-                            <input type="checkbox" ${urun.aktif ? 'checked' : ''} onchange="durumKapatAc(${index})">
+                            <input type="checkbox" ${urun.aktif ? 'checked' : ''} onchange="durumDegistir(${index})">
                             <span class="slider"></span>
                         </label>
                     </td>
                     <td>
-                        <button class="send-btn" onclick="degisiklikleriGonder(${index})">Gönder</button>
+                        <button class="send-btn" onclick="fiyatVeAdetGonder(${index})">Gönder</button>
                     </td>
                 `;
                 govde.appendChild(row);
             });
         }
 
-        // Kartı Açıp Kapatma İşlemi (Adet ve Fiyat Korunur)
-        function durumKapatAc(index) {
-            sistemStokKartlari[index].aktif = !sistemStokKartlari[index].aktif;
-            verileriKaydet();
-            stokKartlariniListele();
+        // Canlı Arama/Filtreleme Fonksiyonu
+        function katalogFiltrele() {
+            const metin = document.getElementById('katalogArama').value.toLowerCase().trim();
+            stokKartlariniListele(metin);
         }
 
-        // Satırdaki Güncel Fiyat ve Miktarı Sisteme Gönderme Butonu
-        function degisiklikleriGonder(index) {
+        // Switch değiştirildiğinde adetler kesinlikle sıfırlanmaz, korunur!
+        function durumDegistir(index) {
+            aktifMağazaVeritabani[index].aktif = !aktifMağazaVeritabani[index].aktif;
+            veritabaniniKaydet();
+            // Tabloyu bozmadan sadece durum rengi güncellensin diye yeniliyoruz
+            const aramaMetni = document.getElementById('katalogArama').value.toLowerCase().trim();
+            stokKartlariniListele(aramaMetni);
+        }
+
+        // Fiyat ve miktarı sisteme kitleyen ana fonksiyon
+        function fiyatVeAdetGonder(index) {
             const yeniFiyat = document.getElementById(`price-${index}`).value.trim();
             const yeniAdet = parseInt(document.getElementById(`qty-${index}`).value) || 0;
 
-            // Verileri listemizde güncelliyoruz
-            sistemStokKartlari[index].fiyat = yeniFiyat;
-            sistemStokKartlari[index].miktar = yeniAdet;
+            // Değerleri kaydet
+            aktifMağazaVeritabani[index].fiyat = yeniFiyat;
+            aktifMağazaVeritabani[index].miktar = yeniAdet;
+            
+            // Eğer fiyat ve adet girildiyse kartı otomatik de aktif edebiliriz (Kullanım kolaylığı)
+            if(yeniAdet > 0 && aktifMağazaVeritabani[index].aktif === false) {
+                aktifMağazaVeritabani[index].aktif = true;
+            }
 
-            verileriKaydet(); // Tarayıcı hafızasına gönderdik
-            stokKartlariniListele(); // Listeyi tazeledik
-            alert(`"${sistemStokKartlari[index].adi}" bilgileri başarıyla merkeze gönderildi!\nYeni Fiyat: ${yeniFiyat} TL\nYeni Stok: ${yeniAdet} Adet`);
+            veritabaniniKaydet();
+            const aramaMetni = document.getElementById('katalogArama').value.toLowerCase().trim();
+            stokKartlariniListele(aramaMetni);
+            
+            alert(`Sistem Güncellendi!\n${aktifMağazaVeritabani[index].adi}\nFiyat: ${yeniFiyat} TL\nStok: ${yeniAdet} Adet`);
         }
 
         // ========================================================
-        // 🔄 SAYFA GEÇİŞ KONTROLLERİ
+        // 🔄 STANDART SAYFA KONTROLLERİ
         // ========================================================
         function ekranDegistir(screenId) {
             const screens = document.querySelectorAll('.app-content');
@@ -567,6 +512,7 @@
             document.getElementById(screenId).classList.add('active');
 
             if(screenId === 'screen-stok-cards') {
+                document.getElementById('katalogArama').value = ""; // Arama kutusunu sıfırla
                 stokKartlariniListele();
             }
         }
@@ -585,8 +531,8 @@
             document.getElementById('val-mensei').innerText = '-';
         }
 
-        // Sistem Başlangıcı
-        verileriYukle();
+        // Uygulama İlk Kurulum Tetikleyicisi
+        veritabaniniYukle();
     </script>
 </body>
 </html>
