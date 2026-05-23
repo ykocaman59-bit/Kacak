@@ -96,7 +96,7 @@
             color: #555;
         }
 
-        /* Barkod Giriş Grubu (Fotoğraftaki Tasarım) */
+        /* Barkod Giriş Grubu */
         .barcode-group {
             display: flex;
             align-items: center;
@@ -141,7 +141,7 @@
             font-size: 16px;
         }
 
-        /* Kamera Butonu (Fotoğraftaki Mavi Kamera Kutusu) */
+        /* Kamera Butonu */
         .camera-trigger-btn {
             background-color: #5c93ed;
             border: none;
@@ -206,7 +206,7 @@
             cursor: pointer;
         }
 
-        /* Kart Ekleme Paneli (Katalog Üstü) */
+        /* Kart Ekleme Paneli */
         .katalog-add-box {
             background: #ffffff;
             border: 1px solid #b4c6e7;
@@ -476,7 +476,7 @@
                 <strong style="color:#856404; font-size:12px;">⚠️ BU BARKOD KATALOGDA YOK! YENİ KART TANIMLANIYOR:</strong>
                 <input type="text" id="injectName" placeholder="Ürün Adı (Örn: Coca Cola 1.5 Lt)">
                 <input type="text" id="injectPrice" placeholder="Satış Fiyatı (Örn: 45.00)">
-                <button class="action-btn btn-send" style="padding:10px;" onclick="katalog canliSistemeEnjekteEt()">✔ Stok Kartını Sisteme Kaydet</button>
+                <button class="action-btn btn-send" style="padding:10px;" onclick="canliSistemeEnjekteEt()">✔ Stok Kartını Sisteme Kaydet</button>
             </div>
         </div>
 
@@ -538,11 +538,8 @@
             localStorage.setItem('canli_erp_katalog_v5', JSON.stringify(aktifMağazaVeritabani));
         }
 
-        // ========================================================
-        // 📷 ENTEGRE KAMERA TARAYICI SİSTEMİ (ARKA KAMERA SEÇİLİ)
-        // ========================================================
         function kameraAc(containerId, inputId, tip) {
-            kameraKapat(); // Eğer açık bir tarayıcı varsa önce temizle
+            kameraKapat();
             
             const container = document.getElementById(containerId);
             container.style.display = "block";
@@ -551,7 +548,7 @@
 
             html5QrcodeScanner = new Html5Qrcode(readerId);
             html5QrcodeScanner.start(
-                { facingMode: "environment" }, // Doğrudan arka kamerayı açar
+                { facingMode: "environment" },
                 { fps: 10, qrbox: { width: 250, height: 150 } },
                 (decodedText) => {
                     document.getElementById(inputId).value = decodedText;
@@ -562,9 +559,9 @@
                         katalogUrunSorgula();
                     }
                 },
-                (errorMessage) => { /* Tarama esnasındaki anlık hatalar yutulur */ }
+                (errorMessage) => { }
             ).catch(err => {
-                alert("Kamera başlatılamadı veya izin verilmedi!");
+                alert("Kamera izni verilmedi veya cihazda kamera bulunamadı!");
                 container.style.display = "none";
             });
         }
@@ -583,9 +580,6 @@
             }
         }
 
-        // ========================================================
-        // 🔍 STOK DETAY EKRANI SORGULAMA MOTORU
-        // ========================================================
         function otomatikUrunGetir() {
             const code = document.getElementById('barcodeInput').value.trim();
             if(code.length >= 8) urunSorgula(code);
@@ -608,7 +602,6 @@
 
             const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenBarkod);
 
-            // İstediğin Değişiklik: Bilinmeyen barkod gelirse doğrudan uyarı veriyor
             if(!urun) {
                 alert("Stok bulunamamıştır!");
                 return;
@@ -627,9 +620,6 @@
             document.getElementById('val-mensei').innerText = "Türkiye";
         }
 
-        // ========================================================
-        // 📥 SADE STOK KARTLARI - YENİ KART SORGULAMA VE ENJEKTE
-        // ========================================================
         function katalogUrunSorgula() {
             const girilenBarkod = document.getElementById('katalogNewBarcode').value.trim();
             const injectPanel = document.getElementById('injectFormPanel');
@@ -644,7 +634,6 @@
 
             if(urun) {
                 alert(`Bu ürün zaten katalogda kayıtlı:\n"${urun.adi}"`);
-                // Tabloda o ürünü aratıp gösterelim
                 document.getElementById('katalogArama').value = girilenBarkod;
                 katalogFiltrele();
             } else {
@@ -655,20 +644,20 @@
         }
 
         function canliSistemeEnjekteEt() {
-            const isim = document.getElementById('injectName').value.trim();
-            const fiyat = document.getElementById('injectPrice').value.trim() || "0.00";
+            const _isim = document.getElementById('injectName').value.trim();
+            const _fiyat = document.getElementById('injectPrice').value.trim() || "0.00";
 
-            if(!isim) {
-                alert("Lütfen ürünün gerçek adını yazın!");
+            if(!_isim) {
+                alert("Lütfen ürünün adını yazın!");
                 return;
             }
 
             const yeniUrun = {
                 barkod: tarananKatalogGeciciBarkod,
-                adi: isim,
+                adi: _isim,
                 birim: "Adet",
                 miktar: 0,
-                fiyat: fiyat,
+                fiyat: _fiyat,
                 aktif: true
             };
 
@@ -681,12 +670,9 @@
             document.getElementById('injectFormPanel').style.display = "none";
 
             stokKartlariniListele();
-            alert(`"${isim}" başarıyla kataloğa eklendi!`);
+            alert(`"${_isim}" başarıyla kataloğa eklendi!`);
         }
 
-        // ========================================================
-        // 🎛️ TABLO YÖNETİMİ (LİSTELEME - DÜZENLEME - SİLME)
-        // ========================================================
         function stokKartlariniListele(filtreMetni = "") {
             const govde = document.getElementById('stokKartlariGövde');
             govde.innerHTML = "";
@@ -786,7 +772,7 @@
         }
 
         function ekranDegistir(screenId) {
-            kameraKapat(); // Ekran değişirken kamera açık kaldıysa kapat
+            kameraKapat();
             const screens = document.querySelectorAll('.app-content');
             screens.forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
@@ -817,3 +803,5 @@
     </script>
 </body>
 </html>
+
+        
