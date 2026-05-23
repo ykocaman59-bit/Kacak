@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeknoERP - Gerçek Türkiye Market Kataloğu</title>
+    <title>TeknoERP - Canlı Barkod Entegrasyonu</title>
     <style>
         * {
             margin: 0;
@@ -21,7 +21,7 @@
             user-select: none;
         }
 
-        /* Üst Bar */
+        /* Üst Sabit Bar */
         .app-header {
             background-color: #4a86e8;
             color: white;
@@ -45,7 +45,7 @@
             cursor: pointer;
         }
 
-        /* Sayfa Yapısı */
+        /* Ekran İçerikleri */
         .app-content {
             flex: 1;
             padding: 15px;
@@ -153,7 +153,7 @@
             margin-bottom: 20px;
         }
 
-        /* Paneller */
+        /* Bilgi Panelleri */
         .error-display {
             background-color: #f2dede;
             color: #a94442;
@@ -174,6 +174,26 @@
             border-left: 4px solid #5cb85c;
             margin-bottom: 15px;
             display: none;
+        }
+
+        /* Canlı Ürün Ekleme Pop-up Kutusu */
+        .fast-add-box {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .fast-add-box input {
+            width: 100%;
+            padding: 6px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
 
         .info-row {
@@ -314,7 +334,15 @@
 
         <button class="sm-btn" onclick="urunGetirManuel()">Stok Getir</button>
 
-        <div class="error-display" id="errorPanel">⚠️ STOK BULUNAMADI!<br><small>(Bu ürün katalogda var ancak kartı kapatılmıştır.)</small></div>
+        <div class="fast-add-box" id="fastAddPanel">
+            <strong>✨ SİSTEMDE OLMAYAN GERÇEK BARKOD ALGILANDI!</strong>
+            <p style="font-size: 11px; margin-top:3px;">Lütfen dükkandaki bu ürünün adını ve ilk fiyatını verip sisteme enjekte edin:</p>
+            <input type="text" id="fastAddName" placeholder="Ürün Adı (Örn: Coca Cola 1.5 Lt)">
+            <input type="text" id="fastAddPrice" placeholder="Satış Fiyatı (Örn: 45.00)">
+            <button class="send-btn" style="width:100%; padding:8px;" onclick="canliSistemeEnjekteEt()">Sisteme Kaydet ve Aktif Et</button>
+        </div>
+
+        <div class="error-display" id="errorPanel">⚠️ KART PASİF / KAPALI!<br><small>(Bu ürün katalogda var ancak kart durumu kapatılmıştır.)</small></div>
         <div class="product-title-display" id="productTitle"></div>
 
         <div class="info-row"><div class="info-label">Birim :</div><div class="info-value" id="val-birim">-</div></div>
@@ -325,9 +353,9 @@
 
     <main id="screen-stok-cards" class="app-content">
         <h3 style="color:#4a86e8; margin-bottom:5px;">Sade Stok Kartları (Katalog)</h3>
-        <p style="font-size:12px; color:#666; margin-bottom:15px;">Gerçek Türkiye barkod listesi aşağıdadır. İstediğin ürünü aç, fiyat ve adetini gönder!</p>
+        <p style="font-size:12px; color:#666; margin-bottom:15px;">Dükkanda okutup enjekte ettiğin tüm gerçek ürünler ve fiyatlar burada birikir.</p>
         
-        <input type="text" class="search-box" id="katalogArama" placeholder="Barkod veya Ürün Adı ile katalogda ara..." oninput="katalogFiltrele()">
+        <input type="text" class="search-box" id="katalogArama" placeholder="Barkod veya Ürün Adı ile ara..." oninput="katalogFiltrele()">
 
         <div style="overflow-x:auto;">
             <table class="card-table">
@@ -347,69 +375,35 @@
     </main>
 
     <script>
-        // ========================================================
-        // 🌍 GERÇEK TÜRKİYE PERAKENDE PİYASASI BARKOD VERİ TABANI (JSON)
-        // ========================================================
-        const gercekMağazaKatalogu = [
-            { barkod: "8690504012345", adi: "Ülker Çikolatalı Gofret 36g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690632001122", adi: "Sütaş Ayran 1.5 Lt", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690526005544", adi: "Coca Cola Orijinal Tat 2.5 Lt", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8680001234567", adi: "Doğuş Filiz Çay 1 Kg", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690504099887", adi: "Eti Karam Gurme 50g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "7622210812345", adi: "Milka Sütlü Çikolata 100g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690766000152", adi: "Pınar Süt 1 Lt Yağlı", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690555021431", adi: "Lays Klasik Cips Aile Boyu", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8691234567890", adi: "Nutella Kakaolu Fındık Kreması 400g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690511101213", adi: "Eti Burçak Bisküvi 131g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            // Sık Tüketilen Yeni Gerçek Ürünler Eklendi
-            { barkod: "8690632034151", adi: "Sütaş Tam Yağlı Yoğurt 2 Kg", birim: "Kova", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690504113217", adi: "Ülker Biskrem Kakaolu 150g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690574001216", adi: "Fanta Portakal 1.5 Lt", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690584210417", adi: "Sprite Gazoz 1.5 Lt", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690623010254", adi: "İçim Süzme Peynir 500g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690766000732", adi: "Pınar Labne 200g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690504312512", adi: "Ülker Metro Çikolata 36g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690504414513", adi: "Ülker Albeni Çikolata 40g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690511314514", adi: "Eti Crax Patlayan Acılı Çubuk", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690511202514", adi: "Eti Popkek Çikolatalı 45g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8693961000114", adi: "Kızılay Sade Soda 200ml", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690754221514", adi: "Beypazarı Doğal Maden Suyu 200ml", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690610031019", adi: "Çaykur Tiryaki Çayı 1 Kg", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690610011011", adi: "Çaykur Rize Turist Çayı 500g", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8691605801219", adi: "Yudum Ayçiçek Yağı 1 Lt", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690520001115", adi: "Ankara Makarna Burgu 500g", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690506412150", adi: "Tat Domates Salçası 830g", birim: "Kutu", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690555412413", adi: "Doritos Taco Baharatlı Mega Boy", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690555312515", adi: "Ruffles Ketçaplı Aromalı Mega Boy", birim: "Paket", miktar: 0, fiyat: "0.00", aktif: false },
-            { barkod: "8690632041210", adi: "Sütaş Tereyağı 250g", birim: "Adet", miktar: 0, fiyat: "0.00", aktif: false }
+        // Başlangıçta sistemde hazır olan temel bazı doğru perakende barkodları
+        const kokHucreKatalog = [
+            { barkod: "8690504012345", adi: "Ülker Çikolatalı Gofret 36g", birim: "Adet", miktar: 100, fiyat: "15.00", aktif: true },
+            { barkod: "8690632001122", adi: "Sütaş Ayran 1.5 Lt", birim: "Adet", miktar: 45, fiyat: "42.50", aktif: true },
+            { barkod: "8690526005544", adi: "Coca Cola Orijinal Tat 2.5 Lt", birim: "Adet", miktar: 60, fiyat: "55.00", aktif: true }
         ];
 
         let aktifMağazaVeritabani = [];
+        let tarananGeciciBarkod = "";
 
-        // ========================================================
-        // 💾 SİSTEM HAFIZA KONTROLLERİ (LocalStorage)
-        // ========================================================
+        // Veritabanı Kontrolü
         function veritabaniniYukle() {
-            const hafizadakiVeri = localStorage.getItem('gercek_erp_katalog_v3');
+            const hafizadakiVeri = localStorage.getItem('canli_erp_katalog_v4');
             if(hafizadakiVeri) {
                 aktifMağazaVeritabani = JSON.parse(hafizadakiVeri);
             } else {
-                // İlk açılışta yukarıdaki gerçek listeyi hafızaya gömüyoruz
-                aktifMağazaVeritabani = [...gercekMağazaKatalogu];
+                aktifMağazaVeritabani = [...kokHucreKatalog];
                 veritabaniniKaydet();
             }
         }
 
         function veritabaniniKaydet() {
-            localStorage.setItem('gercek_erp_katalog_v3', JSON.stringify(aktifMağazaVeritabani));
+            localStorage.setItem('canli_erp_katalog_v4', JSON.stringify(aktifMağazaVeritabani));
         }
 
-        // ========================================================
-        // 🔍 DETAY EKRANI SORGULAMA KONTROLÜ
-        // ========================================================
+        // Sorgulama Motoru
         function otomatikUrunGetir() {
             const code = document.getElementById('barcodeInput').value.trim();
-            if(code.length >= 13) {
+            if(code.length >= 8) { // EAN-8 veya EAN-13 gerçek cihaz okuma sınırı
                 urunSorgula(code);
             }
         }
@@ -422,22 +416,32 @@
         function urunSorgula(girilenBarkod) {
             const errorPanel = document.getElementById('errorPanel');
             const productTitle = document.getElementById('productTitle');
+            const fastAddPanel = document.getElementById('fastAddPanel');
             
             errorPanel.style.display = "none";
             productTitle.style.display = "none";
+            fastAddPanel.style.display = "none";
             resetInfolar();
 
             if(!girilenBarkod) return;
 
             const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenBarkod);
 
-            // Eğer ürün veritabanında YOKSA veya VAR ama aktifliği kapatıldıysa (aktif === false) HATA VER
-            if(!urun || urun.aktif === false) {
+            // ÇÖZÜM NOKTASI: Eğer okutulan barkod sistemde yoksa, "Canlı Enjekte Etme" panelini aç!
+            if(!urun) {
+                tarananGeciciBarkod = girilenBarkod;
+                fastAddPanel.style.display = "block";
+                document.getElementById('fastAddName').focus();
+                return;
+            }
+
+            // Ürün var ama tablodan kapatıldıysa
+            if(urun.aktif === false) {
                 errorPanel.style.display = "block";
                 return;
             }
 
-            // Kart AÇIKSA bilgileri ekrana bas
+            // Kart aktifse verileri bas
             productTitle.style.display = "block";
             productTitle.innerHTML = `<b>Ürün Adı:</b> ${urun.adi}`;
             document.getElementById('val-birim').innerText = urun.birim;
@@ -446,9 +450,40 @@
             document.getElementById('val-mensei').innerText = "Türkiye";
         }
 
-        // ========================================================
-        // 🎛️ SADE STOK KARTLARI LİSTELEME VE VERİ GÖNDERME
-        // ========================================================
+        // Olmayan Barkodu Canlı Enjekte Etme Fonksiyonu
+        function canliSistemeEnjekteEt() {
+            const isim = document.getElementById('fastAddName').value.trim();
+            const fiyat = document.getElementById('fastAddPrice').value.trim() || "0.00";
+
+            if(!isim) {
+                alert("Lütfen ürünün gerçek adını yazın!");
+                return;
+            }
+
+            // Yeni ürünü kalıcı sisteme kilitliyoruz
+            const yeniUrun = {
+                barkod: tarananGeciciBarkod,
+                adi: isim,
+                birim: "Adet",
+                miktar: 0,
+                fiyat: fiyat,
+                aktif: true
+            };
+
+            aktifMağazaVeritabani.unshift(yeniUrun); // Listede en başa koy
+            veritabaniniKaydet();
+
+            // Giriş kutularını temizle ve paneli kapat
+            document.getElementById('fastAddName').value = "";
+            document.getElementById('fastAddPrice').value = "";
+            document.getElementById('fastAddPanel').style.display = "none";
+
+            // Ekranı güncelle ve ürünü göster
+            urunSorgula(tarananGeciciBarkod);
+            alert(`"${isim}" ürünü ${tarananGeciciBarkod} barkoduyla sisteme başarıyla enjekte edildi!`);
+        }
+
+        // Liste Oluşturma
         function stokKartlariniListele(filtreMetni = "") {
             const govde = document.getElementById('stokKartlariGövde');
             govde.innerHTML = "";
@@ -510,9 +545,6 @@
             alert(`Sistem Güncellendi!\n${aktifMağazaVeritabani[index].adi}\nFiyat: ${yeniFiyat} TL\nStok: ${yeniAdet} Adet`);
         }
 
-        // ========================================================
-        // 🔄 SAYFA GEÇİŞ KONTROLLERİ
-        // ========================================================
         function ekranDegistir(screenId) {
             const screens = document.querySelectorAll('.app-content');
             screens.forEach(s => s.classList.remove('active'));
@@ -528,6 +560,7 @@
             document.getElementById('barcodeInput').value = '';
             document.getElementById('errorPanel').style.display = "none";
             document.getElementById('productTitle').style.display = "none";
+            document.getElementById('fastAddPanel').style.display = "none";
             resetInfolar();
         }
 
