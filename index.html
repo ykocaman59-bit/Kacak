@@ -181,6 +181,91 @@
             filter: invert(1);
         }
 
+        /* 📸 TIpatıp AYNI Gelişmiş Barkod Tarayıcı Arayüzü */
+        .scanner-container {
+            width: 100%;
+            max-width: 360px;
+            margin: 12px auto;
+            border-radius: 12px;
+            overflow: hidden;
+            display: none;
+            background: #000;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .scanner-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Hedefleyici Kılavuz Kutu */
+        .scanner-laser-box {
+            width: 70%;
+            height: 140px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 0 400px rgba(0, 0, 0, 0.52);
+        }
+
+        /* Kırmızı Lazer Çizgisi */
+        .scanner-laser-line {
+            width: 100%;
+            height: 3px;
+            background-color: #ff3b30;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            box-shadow: 0 0 8px #ff3b30;
+            animation: laserAnimate 2s infinite ease-in-out;
+        }
+
+        @keyframes laserAnimate {
+            0% { top: 5%; }
+            50% { top: 95%; }
+            100% { top: 5%; }
+        }
+
+        .scanner-info-text {
+            position: absolute;
+            bottom: 12px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            z-index: 6;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .close-scanner {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #ff3b30;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+            cursor: pointer;
+        }
+
         /* 📊 Çift Sütunlu Stok Detay Grid Yapısı */
         .stok-grid-container {
             display: grid;
@@ -236,33 +321,6 @@
             text-align: center;
             font-size: 16px;
             font-weight: bold;
-        }
-
-        /* Kamera Tarama Alanı */
-        .scanner-container {
-            width: 100%;
-            max-width: 350px;
-            margin: 10px auto;
-            border: 2px dashed #4a86e8;
-            border-radius: 8px;
-            overflow: hidden;
-            display: none;
-            background: #000;
-            position: relative;
-        }
-
-        .close-scanner {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(217, 83, 79, 0.9);
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            z-index: 10;
-            cursor: pointer;
         }
 
         /* Kart Ekleme Paneli */
@@ -437,13 +495,50 @@
             padding: 10px;
             display: none;
         }
+
+        /* ❌ Başlığı Olmayan Temiz Temiz Özel Uyarı Penceresi (Custom Alert) */
+        .global-alert-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 5000;
+            justify-content: center;
+            align-items: center;
+        }
+        .global-alert-body {
+            background: white;
+            padding: 20px 25px;
+            border-radius: 10px;
+            width: 85%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+        }
+        .global-alert-text {
+            font-size: 15px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+        .global-alert-btn {
+            background: #4a86e8;
+            color: white;
+            border: none;
+            padding: 8px 25px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
     <header class="app-header">
         <span class="status">Online</span>
-        <span class="home-icon" onclick="ekranDegistir('screen-menu')">🏠</span>
+        <span class="home-icon" onclick="anaMenuyeDon()">🏠</span>
         <span>•••</span>
     </header>
 
@@ -451,10 +546,10 @@
         <div class="menu-grid">
             <button class="menu-btn" onclick="ekranDegistir('screen-stok-detail')">Stok Detay</button>
             <button class="menu-btn green-btn" onclick="ekranDegistir('screen-stok-cards')">Stok Kartları (Yönetim)</button>
-            <button class="menu-btn cyan-btn" onclick="alert('Sayım Fişi Açıldı')">Sayım Fişi</button>
-            <button class="menu-btn" onclick="alert('Deposevk Açıldı')">Deposevk</button>
-            <button class="menu-btn cyan-btn" onclick="alert('Satış İrsaliyesi Açıldı')">Satış İrsaliyesi</button>
-            <button class="menu-btn" onclick="alert('Alış İrsaliyesi Açıldı')">Alış İrsaliyesi</button>
+            <button class="menu-btn cyan-btn" onclick="ozelAlert('Sayım Fişi Açıldı')">Sayım Fişi</button>
+            <button class="menu-btn" onclick="ozelAlert('Deposevk Açıldı')">Deposevk</button>
+            <button class="menu-btn cyan-btn" onclick="ozelAlert('Satış İrsaliyesi Açıldı')">Satış İrsaliyesi</button>
+            <button class="menu-btn" onclick="ozelAlert('Alış İrsaliyesi Açıldı')">Alış İrsaliyesi</button>
             <button class="menu-btn red-btn">Çıkış</button>
         </div>
         <div style="text-align:center; margin-top:20px; color:#4a86e8; font-weight:bold;">www.teknoerp.com.tr</div>
@@ -472,14 +567,14 @@
         <div class="barcode-group">
             <div class="barcode-label">Barkod :</div>
             <div class="barcode-input-wrapper">
-                <input type="text" class="input-text" id="barcodeInput" placeholder="Barkod veya Alt Kod okutun..." oninput="otomatikUrunGetir()">
+                <input type="text" class="input-text" id="barcodeInput" placeholder="Barkod veya Alt Kod girin...">
                 <button class="clear-btn" onclick="temizleStokEkran()">×</button>
             </div>
         </div>
 
         <div class="action-row">
             <button class="blue-action-btn" onclick="manuelAramaModaliAc()">Manuel Arama</button>
-            <button class="camera-circle-btn" onclick="kameraAc('stok-detay-kamera', 'barcodeInput', 'detay')">
+            <button class="camera-circle-btn" onclick="kameraAc('stok-detay-kamera', 'barcodeInput', 'detay', 'info-detay')">
                 <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png" alt="Kamera">
             </button>
             <button class="blue-action-btn" onclick="urunGetirManuel()">Getir</button>
@@ -487,6 +582,12 @@
 
         <div class="scanner-container" id="stok-detay-kamera">
             <button class="close-scanner" onclick="kameraKapat()">Kapat</button>
+            <div class="scanner-overlay">
+                <div class="scanner-laser-box">
+                    <div class="scanner-laser-line"></div>
+                </div>
+                <div class="scanner-info-text" id="info-detay">Barkod Okutunuz</div>
+            </div>
             <div id="reader-detay" style="width: 100%;"></div>
         </div>
 
@@ -547,8 +648,7 @@
                             <th>Miktar</th>
                         </tr>
                     </thead>
-                    <tbody id="islemListesiGövde">
-                        </tbody>
+                    <tbody id="islemListesiGövde"></tbody>
                 </table>
             </div>
         </div>
@@ -561,12 +661,19 @@
                 <div class="barcode-input-wrapper">
                     <input type="text" class="input-text" id="katalogNewBarcode" placeholder="Barkod yazın...">
                 </div>
-                <button class="camera-circle-btn" style="border-radius:4px;" onclick="kameraAc('katalog-ekle-kamera', 'katalogNewBarcode', 'katalog')">
+                <button class="camera-circle-btn" style="border-radius:4px;" onclick="kameraAc('katalog-ekle-kamera', 'katalogNewBarcode', 'katalog', 'info-katalog')">
                     <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png" alt="Kamera">
                 </button>
             </div>
+            
             <div class="scanner-container" id="katalog-ekle-kamera">
                 <button class="close-scanner" onclick="kameraKapat()">Kapat</button>
+                <div class="scanner-overlay">
+                    <div class="scanner-laser-box">
+                        <div class="scanner-laser-line"></div>
+                    </div>
+                    <div class="scanner-info-text" id="info-katalog">Barkod Okutunuz</div>
+                </div>
                 <div id="reader-katalog" style="width: 100%;"></div>
             </div>
             <button class="blue-action-btn" style="width:100%; border-radius:4px;" onclick="katalogUrunSorgula()">Sistemde Sorgula</button>
@@ -614,7 +721,7 @@
             <label style="font-size:12px; font-weight:bold; display:block; margin-bottom:4px;">Arama Tipi Seçin:</label>
             <select class="dropdown" id="manuelAramaTipi" style="width:100%; margin-bottom:12px;" onchange="manuelAramaTipDegisti()">
                 <option value="adi">Adı</option>
-                <option value="kodu">Kodu (Barkod veya Benzersiz Alt Kod)</option>
+                <option value="kodu">Kodu (Barkod veya Sistem Alt Kodu)</option>
             </select>
 
             <label style="font-size:12px; font-weight:bold; display:block; margin-bottom:4px;" id="manuelGirisEtiketi">Ürün Adını Girin:</label>
@@ -629,8 +736,14 @@
         </div>
     </div>
 
+    <div class="global-alert-modal" id="pencereAlertKutusu">
+        <div class="global-alert-body">
+            <div class="global-alert-text" id="pencereAlertMetni">Uyarı Mesajı</div>
+            <button class="global-alert-btn" onclick="ozelAlertKapat()">Tamam</button>
+        </div>
+    </div>
+
     <script>
-        // Kök hücre verisi (Buradaki stokkodu sistemin ürettiği 4-5 haneli benzersiz koddur)
         const kokHucreKatalog = [
             { barkod: "8690504012345", adi: "Ülker Çikolatalı Gofret 36g", birim: "1 (Adet)", miktar: "200", fiyat: "45.00", stokkodu: "522", grupkodu: "02000", ozelkod: "100293", mensei: "%18", digerfiyat: "12 Ay", rafkodu: "710000", ureticikodu: "Tekno Corp", origin: "Türkiye", aktif: true }
         ];
@@ -640,10 +753,20 @@
         let duzenlenenUrunIndex = null;
         let tarananKatalogGeciciBarkod = "";
         let aktifSeciliUrun = null; 
-        let cikarilanEtiketlerListesi = []; // Seri, Sıra takibi için dizi
+        let cikarilanEtiketlerListesi = [];
+
+        // ❌ Web sitesi yazısını kaldıran temiz uyarı sistemi
+        function ozelAlert(mesaj) {
+            document.getElementById('pencereAlertMetni').innerText = mesaj;
+            document.getElementById('pencereAlertKutusu').style.display = 'flex';
+        }
+
+        function ozelAlertKapat() {
+            document.getElementById('pencereAlertKutusu').style.display = 'none';
+        }
 
         function veritabaniniYukle() {
-            const hafizadakiVeri = localStorage.getItem('canli_erp_katalog_v9');
+            const hafizadakiVeri = localStorage.getItem('canli_erp_katalog_v10');
             if(hafizadakiVeri) {
                 aktifMağazaVeritabani = JSON.parse(hafizadakiVeri);
             } else {
@@ -653,83 +776,88 @@
         }
 
         function veritabaniniKaydet() {
-            localStorage.setItem('canli_erp_katalog_v9', JSON.stringify(aktifMağazaVeritabani));
+            localStorage.setItem('canli_erp_katalog_v10', JSON.stringify(aktifMağazaVeritabani));
         }
 
-        // 🎰 BENZERSİZ 4 VEYA 5 HANELİ KOD ÜRETİCİ (ÇAKIŞMAYI ÖNLER)
         function benzersizAltKodUret() {
             let kodBulundu = false;
             let uretilenKod = "";
-            
             while (!kodBulundu) {
-                // %50 şansla 4 haneli (1000-9999) veya 5 haneli (10000-99999) üretir
                 if (Math.random() > 0.5) {
                     uretilenKod = Math.floor(1000 + Math.random() * 9000).toString();
                 } else {
                     uretilenKod = Math.floor(10000 + Math.random() * 90000).toString();
                 }
-
-                // Sistemde bu kod daha önce kullanılmış mı kontrol et
                 const cakismaVarMi = aktifMağazaVeritabani.some(u => u.stokkodu === uretilenKod || u.barkod === uretilenKod);
-                if (!cakismaVarMi) {
-                    kodBulundu = true;
-                }
+                if (!cakismaVarMi) { kodBulundu = true; }
             }
             return uretilenKod;
         }
 
-        function kameraAc(containerId, inputId, tip) {
+        // 📸 Kırmızı Çizgili Tarayıcı Fonksiyonu
+        function kameraAc(containerId, inputId, tip, infoTextId) {
             kameraKapat();
             const container = document.getElementById(containerId);
+            const infoLabel = document.getElementById(infoTextId);
+            
             container.style.display = "block";
+            infoLabel.innerText = "Barkod Okutunuz"; 
+
             const readerId = tip === 'detay' ? 'reader-detay' : 'reader-katalog';
 
             html5QrcodeScanner = new Html5Qrcode(readerId);
             html5QrcodeScanner.start(
                 { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 150 } },
+                { fps: 15, qrbox: { width: 260, height: 140 } },
                 (decodedText) => {
                     document.getElementById(inputId).value = decodedText;
-                    kameraKapat();
-                    if(tip === 'detay') urunSorgula(decodedText); else katalogUrunSorgula();
+                    infoLabel.innerText = decodedText; // Taratılan kod anlık yazıya dönüşür
+                    
+                    setTimeout(() => {
+                        kameraKapat();
+                        // Kamera okutunca OTOMATİK getirme aktiftir!
+                        urunSorgula(decodedText); 
+                        if(tip === 'katalog') katalogUrunSorgula();
+                    }, 400);
                 },
                 (err) => { }
-            ).catch(() => { alert("Kamera açılamadı!"); container.style.display = "none"; });
+            ).catch(() => { ozelAlert("Kamera açılamadı!"); container.style.display = "none"; });
         }
 
         function kameraKapat() {
             if (html5QrcodeScanner) {
                 html5QrcodeScanner.stop().then(() => {
-                    document.getElementById('stok-detay-kamera').style.display = "none";
-                    document.getElementById('katalog-ekle-kamera').style.display = "none";
-                    html5QrcodeScanner = null;
+                    isleyisKapatPanelleri();
                 }).catch(() => {
-                    document.getElementById('stok-detay-kamera').style.display = "none";
-                    document.getElementById('katalog-ekle-kamera').style.display = "none";
-                    html5QrcodeScanner = null;
+                    isleyisKapatPanelleri();
                 });
             }
         }
 
-        function otomatikUrunGetir() {
-            const code = document.getElementById('barcodeInput').value.trim();
-            if(code.length >= 3) urunSorgula(code);
+        function isleyisKapatPanelleri() {
+            document.getElementById('stok-detay-kamera').style.display = "none";
+            document.getElementById('katalog-ekle-kamera').style.display = "none";
+            html5QrcodeScanner = null;
         }
 
+        // Klavyeden girildiğinde "Getir" tuşuna basma şartı için ayrıldı
         function urunGetirManuel() {
             const code = document.getElementById('barcodeInput').value.trim();
-            urunSorgula(code);
+            if(!code) {
+                ozelAlert("Lütfen bir barkod veya alt kod girin!");
+                return;
+            }
+            urunSorgula(code, true);
         }
 
-        // Hem ana barkod numarası hem de üretilen benzersiz stok kodu (alt kod) ile sorgulama yapar
-        function urunSorgula(girilenKod) {
+        function urunSorgula(girilenKod, manuelMi = false) {
             if(!girilenKod) return;
-            resetInfolar();
             
-            // Hem barkoda bak hem de üretilen benzersiz stok koduna (alt koda) bak
             const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenKod || u.stokkodu === girilenKod);
 
             if(!urun) {
+                if(manuelMi) ozelAlert("Stok bulunamamıştır!");
+                resetInfolar();
                 return;
             }
 
@@ -743,14 +871,22 @@
             document.getElementById('val-digerfiyat').innerText = urun.digerfiyat || "-";
             document.getElementById('val-ureticikodu').innerText = urun.ureticikodu || "-";
             document.getElementById('val-origin').innerText = urun.origin || "Türkiye";
-            
             document.getElementById('val-stokkodu').innerText = urun.stokkodu || "-";
             document.getElementById('val-grupkodu').innerText = urun.grupkodu || "-";
             document.getElementById('val-ozelkod').innerText = urun.ozelkod || "-";
             document.getElementById('val-rafkodu').innerText = urun.rafkodu || "-";
         }
 
-        // 🔍 MANUEL ARAMA MANTIKSAL FONKSİYONLARI
+        // 🏠 ANA MENÜYE DÖNÜŞ VE SIFIRLAMA
+        function anaMenuyeDon() {
+            cikarilanEtiketlerListesi = []; // Tüm basılan işlem listesi sıfırlanır!
+            tabloyuGuncelle();
+            document.getElementById('islemListesiPaneli').style.display = "none";
+            temizleStokEkran();
+            ekranDegistir('screen-menu');
+        }
+
+        // 🔍 MANUEL ARAMA MODAL FONKSİYONLARI
         function manuelAramaModaliAc() {
             document.getElementById('manuelAramaModali').style.display = "flex";
             document.getElementById('manuelAramaInput').value = "";
@@ -782,10 +918,9 @@
             const sonucAlani = document.getElementById('manuelSonucAlani');
             sonucAlani.innerHTML = "";
 
-            if(!query) { alert("Lütfen arama alanı doldurun!"); return; }
+            if(!query) { ozelAlert("Lütfen arama alanını doldurun!"); return; }
 
             if(tip === 'adi') {
-                // İsim bazlı arama listeleme yapar
                 const sonuclar = aktifMağazaVeritabani.filter(u => u.adi.toLowerCase().includes(query));
                 if(sonuclar.length === 0) {
                     sonucAlani.innerHTML = "<span style='color:red;'>Ürün bulunamadı!</span>";
@@ -793,24 +928,21 @@
                 }
                 sonuclar.forEach(u => {
                     const div = document.createElement('div');
-                    div.style.padding = "6px";
-                    div.style.borderBottom = "1px solid #eee";
-                    div.style.cursor = "pointer";
-                    div.style.background = "#f9f9f9";
-                    div.innerHTML = `<b>${u.adi}</b> <br> <small style='color:#666;'>Kod: ${u.stokkodu} | Barkod: ${u.barkod}</small>`;
+                    div.style.padding = "6px"; div.style.borderBottom = "1px solid #eee";
+                    div.style.cursor = "pointer"; div.style.background = "#f9f9f9";
+                    div.innerHTML = `<b>${u.adi}</b> <br> <small style='color:#4a86e8;'>Stok Kodu: ${u.stokkodu}</small>`;
                     div.onclick = function() {
                         document.getElementById('barcodeInput').value = u.barkod;
-                        urunSorgula(u.barkod);
+                        urunSorgula(u.barkod, true);
                         manuelAramaModaliKapat();
                     };
                     sonucAlani.appendChild(div);
                 });
             } else {
-                // Kod bazlı arama doğrudan getirir
                 const urun = aktifMağazaVeritabani.find(u => u.barkod === query || u.stokkodu === query);
                 if(urun) {
                     document.getElementById('barcodeInput').value = urun.barkod;
-                    urunSorgula(urun.barkod);
+                    urunSorgula(urun.barkod, true);
                     manuelAramaModaliKapat();
                 } else {
                     sonucAlani.innerHTML = "<span style='color:red;'>Eşleşen kod bulunamadı!</span>";
@@ -818,16 +950,15 @@
             }
         }
 
-        // 🏷️ RAF ETİKETİ SEÇİM TETİKLEYİCİSİ
         function rafEtiketiSor(element) {
             const secilenDizayn = element.options[element.selectedIndex].text;
-            alert(`Hangi etiket şablonunu basmak istiyorsunuz?\nSeçilen: ${secilenDizayn}`);
+            ozelAlert(`Seçilen Şablon Düzeni: ${secilenDizayn}`);
         }
 
-        // 📥 İŞLEM SATIRI EKLEME (SERİ, SIRA, STOK KODLU)
+        // 📥 AKILLI ETİKET EKLEME VE UYARI SİSTEMİ
         function islemListesineEkle() {
-            if(!aktifSeciliUrun) {
-                alert("Önce arama veya barkod ile bir ürün getirmelisiniz!");
+            if(!aktifSeciliUrun || document.getElementById('productTitle').innerText === "") {
+                ozelAlert("Önce arama veya barkod ile bir ürün getirmelisiniz!");
                 return;
             }
             const miktar = parseInt(document.getElementById('islemAdetInput').value) || 1;
@@ -842,7 +973,9 @@
 
             cikarilanEtiketlerListesi.push(yeniIslemSatiri);
             tabloyuGuncelle();
-            alert(`"${aktifSeciliUrun.adi}" işlem satırlarına eklendi.`);
+            
+            // Gerçekten ürün geldiyse verilecek temiz uyarı
+            ozelAlert("Etiket Basıldı"); 
         }
 
         function tabloyuGuncelle() {
@@ -876,11 +1009,11 @@
             const injectPanel = document.getElementById('injectFormPanel');
             injectPanel.style.display = "none";
 
-            if(!girilenBarkod) { alert("Barkod girin!"); return; }
+            if(!girilenBarkod) { ozelAlert("Barkod girin!"); return; }
             const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenBarkod || u.stokkodu === girilenBarkod);
 
             if(urun) {
-                alert(`Bu ürün zaten sistemde kayıtlı:\n"${urun.adi}"`);
+                ozelAlert(`Bu ürün zaten sistemde kayıtlı:\n"${urun.adi}"`);
                 document.getElementById('katalogArama').value = girilenBarkod;
                 katalogFiltrele();
             } else {
@@ -894,9 +1027,8 @@
             const _isim = document.getElementById('injectName').value.trim();
             const _fiyat = document.getElementById('injectPrice').value.trim() || "0.00";
 
-            if(!_isim) { alert("Ürün adı zorunlu!"); return; }
+            if(!_isim) { ozelAlert("Ürün adı zorunlu!"); return; }
 
-            // 🎯 Burası çakışma yapmayan benzersiz 4-5 haneli kodu üreten yerdir
             const uretilenBenzersizKod = benzersizAltKodUret();
 
             const yeniUrun = {
@@ -905,21 +1037,14 @@
                 birim: "1 (Adet)",
                 miktar: "0",
                 fiyat: _fiyat,
-                stokkodu: uretilenBenzersizKod, // Üretilen benzersiz alt kod buraya atanıyor
-                grupkodu: "02000",
-                ozelkod: "100293",
-                mensei: "%18",
-                digerfiyat: "12 Ay",
-                rafkodu: "710000",
-                ureticikodu: "Tekno Corp",
-                origin: "Türkiye",
-                aktif: true
+                stokkodu: uretilenBenzersizKod, 
+                grupkodu: "02000", ozelkod: "100293", mensei: "%18", digerfiyat: "12 Ay", rafkodu: "710000", ureticikodu: "Tekno Corp", origin: "Türkiye", aktif: true
             };
 
             aktifMağazaVeritabani.unshift(yeniUrun);
             veritabaniniKaydet();
 
-            alert(`Stok Kartı Başarıyla Kaydedildi!\nÜretilen Benzersiz Kod: ${uretilenBenzersizKod}`);
+            ozelAlert(`Stok Kartı Başarıyla Kaydedildi!\nÜretilen Sistem Kodu: ${uretilenBenzersizKod}`);
 
             document.getElementById('injectName').value = "";
             document.getElementById('injectPrice').value = "";
@@ -944,12 +1069,8 @@
                         <b>${urun.adi}</b><br>
                         <small style="color:#2b78c5; font-weight:bold;">Sistem Kodu: ${urun.stokkodu}</small>
                     </td>
-                    <td>
-                        <input type="text" class="inline-input" id="price-${index}" value="${urun.fiyat}">
-                    </td>
-                    <td>
-                        <input type="number" class="inline-input" id="qty-${index}" value="${urun.miktar}">
-                    </td>
+                    <td><input type="text" class="inline-input" id="price-${index}" value="${urun.fiyat}"></td>
+                    <td><input type="number" class="inline-input" id="qty-${index}" value="${urun.miktar}"></td>
                     <td>
                         <label class="switch">
                             <input type="checkbox" ${urun.aktif ? 'checked' : ''} onchange="durumDegistir(${index})">
@@ -980,17 +1101,14 @@
             const yeniBarkod = document.getElementById('editBarcodeField').value.trim();
             const yeniIsim = document.getElementById('editNameField').value.trim();
 
-            if(!yeniBarkod || !yeniIsim) {
-                alert("Alanlar boş bırakılamaz!");
-                return;
-            }
+            if(!yeniBarkod || !yeniIsim) { ozelAlert("Alanlar boş bırakılamaz!"); return; }
 
             aktifMağazaVeritabani[duzenlenenUrunIndex].barkod = yeniBarkod;
             aktifMağazaVeritabani[duzenlenenUrunIndex].adi = yeniIsim;
             veritabaniniKaydet();
             duzenlemeKapat();
             stokKartlariniListele();
-            alert("Başarıyla güncellendi!");
+            ozelAlert("Başarıyla güncellendi!");
         }
 
         function duzenlemeKapat() {
@@ -1000,6 +1118,7 @@
 
         function urunKalıcıSil(index) {
             const urun = aktifMağazaVeritabani[index];
+            // Burada basit confirm yapısı mecburen kalıyor, ancak alertlerin tamamı temizlendi
             if(confirm(`"${urun.adi}" tamamen silinsin mi?`)) {
                 aktifMağazaVeritabani.splice(index, 1);
                 veritabaniniKaydet();
@@ -1020,7 +1139,7 @@
             aktifMağazaVeritabani[index].fiyat = document.getElementById(`price-${index}`).value.trim();
             aktifMağazaVeritabani[index].miktar = document.getElementById(`qty-${index}`).value || 0;
             veritabaniniKaydet();
-            alert("Güncellendi!");
+            ozelAlert("Güncellendi!");
         }
 
         function ekranDegistir(screenId) {
