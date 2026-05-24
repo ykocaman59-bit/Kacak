@@ -216,6 +216,7 @@
             border-radius: 4px;
             font-size: 13px;
             background: white;
+            font-weight: bold;
         }
 
         /* En Alt İşlem Butonları */
@@ -292,7 +293,7 @@
             border-radius: 4px;
         }
 
-        /* Canlı Düzenleme Paneli */
+        /* Düzenleme Paneli */
         .edit-box {
             background: #e2f0d9;
             border: 1px solid #b4c6e7;
@@ -312,7 +313,7 @@
             border-radius: 4px;
         }
 
-        /* Tablo Yapısı */
+        /* Tablolar */
         .search-box {
             width: 100%;
             padding: 10px;
@@ -396,6 +397,46 @@
         .btn-send { background-color: #5cb85c; }
         .btn-edit { background-color: #f0ad4e; }
         .btn-delete { background-color: #d9534f; }
+
+        /* Custom Açılır Pencere Modalları */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-body {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #4a86e8;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f4f6f9;
+            padding-bottom: 8px;
+        }
+
+        /* İşlem Detay Listesi Alanı */
+        .islem-listesi-konteyner {
+            margin-top: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -409,7 +450,7 @@
     <main id="screen-menu" class="app-content active">
         <div class="menu-grid">
             <button class="menu-btn" onclick="ekranDegistir('screen-stok-detail')">Stok Detay</button>
-            <button class="menu-btn green-btn" onclick="ekranDegistir('screen-stok-cards')">Sade Stok Kartları</button>
+            <button class="menu-btn green-btn" onclick="ekranDegistir('screen-stok-cards')">Stok Kartları (Yönetim)</button>
             <button class="menu-btn cyan-btn" onclick="alert('Sayım Fişi Açıldı')">Sayım Fişi</button>
             <button class="menu-btn" onclick="alert('Deposevk Açıldı')">Deposevk</button>
             <button class="menu-btn cyan-btn" onclick="alert('Satış İrsaliyesi Açıldı')">Satış İrsaliyesi</button>
@@ -431,13 +472,13 @@
         <div class="barcode-group">
             <div class="barcode-label">Barkod :</div>
             <div class="barcode-input-wrapper">
-                <input type="text" class="input-text" id="barcodeInput" placeholder="Barkod okutun..." oninput="otomatikUrunGetir()">
+                <input type="text" class="input-text" id="barcodeInput" placeholder="Barkod veya Alt Kod okutun..." oninput="otomatikUrunGetir()">
                 <button class="clear-btn" onclick="temizleStokEkran()">×</button>
             </div>
         </div>
 
         <div class="action-row">
-            <button class="blue-action-btn" onclick="alert('Manuel Arama')">Manuel Arama</button>
+            <button class="blue-action-btn" onclick="manuelAramaModaliAc()">Manuel Arama</button>
             <button class="camera-circle-btn" onclick="kameraAc('stok-detay-kamera', 'barcodeInput', 'detay')">
                 <img src="https://cdn-icons-png.flaticon.com/512/685/685655.png" alt="Kamera">
             </button>
@@ -464,7 +505,11 @@
             <div class="grid-cell"><span class="grid-label">Menşei :</span><span class="grid-value" id="val-mensei">-</span></div>
             <div class="grid-cell">
                 <span class="grid-label">Dizayn Seç:</span>
-                <select class="grid-select"><option>Raf Etiket</option></select>
+                <select class="grid-select" id="dizaynSecici" onchange="rafEtiketiSor(this)">
+                    <option value="Raf Etiket">Raf Etiket</option>
+                    <option value="Kucuk Etiket">Küçük Etiket</option>
+                    <option value="Buyuk Etiket">Büyük İndirim Etiketi</option>
+                </select>
             </div>
 
             <div class="grid-cell"><span class="grid-label">Diğer Fiyat:</span><span class="grid-value" id="val-digerfiyat">-</span></div>
@@ -484,9 +529,28 @@
         </div>
 
         <div class="bottom-action-bar">
-            <input type="number" class="qty-input" value="1">
-            <button class="blue-action-btn" style="border-radius:12px;" onclick="alert('Eklendi')">Ekle</button>
-            <button class="blue-action-btn" style="border-radius:12px;" onclick="alert('İşlem Detayları Açılıyor')">İşlem Detayları</button>
+            <input type="number" class="qty-input" id="islemAdetInput" value="1">
+            <button class="blue-action-btn" style="border-radius:12px;" onclick="islemListesineEkle()">Ekle</button>
+            <button class="blue-action-btn" style="border-radius:12px;" onclick="islemListesiniGosterGizle()">İşlem Detayları</button>
+        </div>
+
+        <div class="islem-listesi-konteyner" id="islemListesiPaneli">
+            <h4 style="color:#4a86e8; margin-bottom:8px; font-size:13px; text-align:center; border-bottom:1px dashed #ccc; padding-bottom:5px;">Çıkartılan Etiket İşlem Satırları</h4>
+            <div style="overflow-x:auto;">
+                <table class="card-table" style="font-size:10px;">
+                    <thead>
+                        <tr>
+                            <th>Seri</th>
+                            <th>Sıra</th>
+                            <th>Stok Kodu</th>
+                            <th>Ürün Adı</th>
+                            <th>Miktar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="islemListesiGövde">
+                        </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
@@ -517,10 +581,7 @@
 
         <div class="edit-box" id="editPanel">
             <strong>✏️ STOK KARTI DÜZENLEME PANELİ</strong>
-            <p style="font-size: 11px; margin-top:3px;">Ürünün bilgilerini güncelleyin:</p>
-            <label style="font-size:12px; font-weight:bold;">Barkod No:</label>
             <input type="text" id="editBarcodeField">
-            <label style="font-size:12px; font-weight:bold;">Ürün Adı:</label>
             <input type="text" id="editNameField">
             <div style="display: flex; gap: 10px;">
                 <button class="action-btn btn-send" style="padding:8px; flex:1;" onclick="stokKartiniGuncelle()">Güncelle</button>
@@ -546,18 +607,43 @@
         </div>
     </main>
 
+    <div class="custom-modal" id="manuelAramaModali">
+        <div class="modal-body">
+            <div class="modal-title">🔍 Gelişmiş Manuel Arama</div>
+            
+            <label style="font-size:12px; font-weight:bold; display:block; margin-bottom:4px;">Arama Tipi Seçin:</label>
+            <select class="dropdown" id="manuelAramaTipi" style="width:100%; margin-bottom:12px;" onchange="manuelAramaTipDegisti()">
+                <option value="adi">Adı</option>
+                <option value="kodu">Kodu (Barkod veya Benzersiz Alt Kod)</option>
+            </select>
+
+            <label style="font-size:12px; font-weight:bold; display:block; margin-bottom:4px;" id="manuelGirisEtiketi">Ürün Adını Girin:</label>
+            <input type="text" id="manuelAramaInput" class="search-box" style="margin-bottom:12px;" placeholder="Arama yapın...">
+
+            <div id="manuelSonucAlani" style="max-height:150px; overflow-y:auto; margin-bottom:15px; font-size:12px;"></div>
+
+            <div style="display:flex; gap:10px;">
+                <button class="blue-action-btn" style="flex:1; border-radius:6px;" onclick="manuelAramaYap()" id="manuelAraButon">Ara</button>
+                <button class="blue-action-btn" style="flex:1; border-radius:6px; background:#d9534f;" onclick="manuelAramaModaliKapat()">Kapat</button>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Kök hücre verisi (Buradaki stokkodu sistemin ürettiği 4-5 haneli benzersiz koddur)
         const kokHucreKatalog = [
-            { barkod: "8690504012345", adi: "Ülker Çikolatalı Gofret 36g", birim: "1 (Adet)", miktar: "200", fiyat: "45.00", stokkodu: "00011341", grupkodu: "02000", ozelkod: "100293", mensei: "%18", digerfiyat: "12 Ay", rafkodu: "710000", ureticikodu: "Tekno Corp", origin: "Türkiye", aktif: true }
+            { barkod: "8690504012345", adi: "Ülker Çikolatalı Gofret 36g", birim: "1 (Adet)", miktar: "200", fiyat: "45.00", stokkodu: "522", grupkodu: "02000", ozelkod: "100293", mensei: "%18", digerfiyat: "12 Ay", rafkodu: "710000", ureticikodu: "Tekno Corp", origin: "Türkiye", aktif: true }
         ];
 
         let aktifMağazaVeritabani = [];
         let html5QrcodeScanner = null;
         let duzenlenenUrunIndex = null;
         let tarananKatalogGeciciBarkod = "";
+        let aktifSeciliUrun = null; 
+        let cikarilanEtiketlerListesi = []; // Seri, Sıra takibi için dizi
 
         function veritabaniniYukle() {
-            const hafizadakiVeri = localStorage.getItem('canli_erp_katalog_v8');
+            const hafizadakiVeri = localStorage.getItem('canli_erp_katalog_v9');
             if(hafizadakiVeri) {
                 aktifMağazaVeritabani = JSON.parse(hafizadakiVeri);
             } else {
@@ -567,7 +653,29 @@
         }
 
         function veritabaniniKaydet() {
-            localStorage.setItem('canli_erp_katalog_v8', JSON.stringify(aktifMağazaVeritabani));
+            localStorage.setItem('canli_erp_katalog_v9', JSON.stringify(aktifMağazaVeritabani));
+        }
+
+        // 🎰 BENZERSİZ 4 VEYA 5 HANELİ KOD ÜRETİCİ (ÇAKIŞMAYI ÖNLER)
+        function benzersizAltKodUret() {
+            let kodBulundu = false;
+            let uretilenKod = "";
+            
+            while (!kodBulundu) {
+                // %50 şansla 4 haneli (1000-9999) veya 5 haneli (10000-99999) üretir
+                if (Math.random() > 0.5) {
+                    uretilenKod = Math.floor(1000 + Math.random() * 9000).toString();
+                } else {
+                    uretilenKod = Math.floor(10000 + Math.random() * 90000).toString();
+                }
+
+                // Sistemde bu kod daha önce kullanılmış mı kontrol et
+                const cakismaVarMi = aktifMağazaVeritabani.some(u => u.stokkodu === uretilenKod || u.barkod === uretilenKod);
+                if (!cakismaVarMi) {
+                    kodBulundu = true;
+                }
+            }
+            return uretilenKod;
         }
 
         function kameraAc(containerId, inputId, tip) {
@@ -605,7 +713,7 @@
 
         function otomatikUrunGetir() {
             const code = document.getElementById('barcodeInput').value.trim();
-            if(code.length >= 8) urunSorgula(code);
+            if(code.length >= 3) urunSorgula(code);
         }
 
         function urunGetirManuel() {
@@ -613,15 +721,19 @@
             urunSorgula(code);
         }
 
-        function urunSorgula(girilenBarkod) {
-            if(!girilenBarkod) return;
+        // Hem ana barkod numarası hem de üretilen benzersiz stok kodu (alt kod) ile sorgulama yapar
+        function urunSorgula(girilenKod) {
+            if(!girilenKod) return;
             resetInfolar();
-            const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenBarkod);
+            
+            // Hem barkoda bak hem de üretilen benzersiz stok koduna (alt koda) bak
+            const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenKod || u.stokkodu === girilenKod);
 
             if(!urun) {
-                alert("Stok bulunamamıştır!");
                 return;
             }
+
+            aktifSeciliUrun = urun;
 
             document.getElementById('productTitle').innerText = urun.adi;
             document.getElementById('val-birim').innerText = urun.birim || "1 (Adet)";
@@ -638,16 +750,137 @@
             document.getElementById('val-rafkodu').innerText = urun.rafkodu || "-";
         }
 
+        // 🔍 MANUEL ARAMA MANTIKSAL FONKSİYONLARI
+        function manuelAramaModaliAc() {
+            document.getElementById('manuelAramaModali').style.display = "flex";
+            document.getElementById('manuelAramaInput').value = "";
+            document.getElementById('manuelSonucAlani').innerHTML = "";
+            manuelAramaTipDegisti();
+        }
+
+        function manuelAramaModaliKapat() {
+            document.getElementById('manuelAramaModali').style.display = "none";
+        }
+
+        function manuelAramaTipDegisti() {
+            const tip = document.getElementById('manuelAramaTipi').value;
+            const etiket = document.getElementById('manuelGirisEtiketi');
+            const buton = document.getElementById('manuelAraButon');
+            
+            if(tip === 'adi') {
+                etiket.innerText = "Ürün Adını Girin:";
+                buton.innerText = "Ara";
+            } else {
+                etiket.innerText = "Kodu Girin (Barkod veya Sistem Alt Kodu):";
+                buton.innerText = "Getir";
+            }
+        }
+
+        function manuelAramaYap() {
+            const tip = document.getElementById('manuelAramaTipi').value;
+            const query = document.getElementById('manuelAramaInput').value.toLowerCase().trim();
+            const sonucAlani = document.getElementById('manuelSonucAlani');
+            sonucAlani.innerHTML = "";
+
+            if(!query) { alert("Lütfen arama alanı doldurun!"); return; }
+
+            if(tip === 'adi') {
+                // İsim bazlı arama listeleme yapar
+                const sonuclar = aktifMağazaVeritabani.filter(u => u.adi.toLowerCase().includes(query));
+                if(sonuclar.length === 0) {
+                    sonucAlani.innerHTML = "<span style='color:red;'>Ürün bulunamadı!</span>";
+                    return;
+                }
+                sonuclar.forEach(u => {
+                    const div = document.createElement('div');
+                    div.style.padding = "6px";
+                    div.style.borderBottom = "1px solid #eee";
+                    div.style.cursor = "pointer";
+                    div.style.background = "#f9f9f9";
+                    div.innerHTML = `<b>${u.adi}</b> <br> <small style='color:#666;'>Kod: ${u.stokkodu} | Barkod: ${u.barkod}</small>`;
+                    div.onclick = function() {
+                        document.getElementById('barcodeInput').value = u.barkod;
+                        urunSorgula(u.barkod);
+                        manuelAramaModaliKapat();
+                    };
+                    sonucAlani.appendChild(div);
+                });
+            } else {
+                // Kod bazlı arama doğrudan getirir
+                const urun = aktifMağazaVeritabani.find(u => u.barkod === query || u.stokkodu === query);
+                if(urun) {
+                    document.getElementById('barcodeInput').value = urun.barkod;
+                    urunSorgula(urun.barkod);
+                    manuelAramaModaliKapat();
+                } else {
+                    sonucAlani.innerHTML = "<span style='color:red;'>Eşleşen kod bulunamadı!</span>";
+                }
+            }
+        }
+
+        // 🏷️ RAF ETİKETİ SEÇİM TETİKLEYİCİSİ
+        function rafEtiketiSor(element) {
+            const secilenDizayn = element.options[element.selectedIndex].text;
+            alert(`Hangi etiket şablonunu basmak istiyorsunuz?\nSeçilen: ${secilenDizayn}`);
+        }
+
+        // 📥 İŞLEM SATIRI EKLEME (SERİ, SIRA, STOK KODLU)
+        function islemListesineEkle() {
+            if(!aktifSeciliUrun) {
+                alert("Önce arama veya barkod ile bir ürün getirmelisiniz!");
+                return;
+            }
+            const miktar = parseInt(document.getElementById('islemAdetInput').value) || 1;
+            
+            const yeniIslemSatiri = {
+                seri: "A",
+                sira: cikarilanEtiketlerListesi.length + 1,
+                stokKodu: aktifSeciliUrun.stokkodu,
+                urunAdi: aktifSeciliUrun.adi,
+                adet: miktar
+            };
+
+            cikarilanEtiketlerListesi.push(yeniIslemSatiri);
+            tabloyuGuncelle();
+            alert(`"${aktifSeciliUrun.adi}" işlem satırlarına eklendi.`);
+        }
+
+        function tabloyuGuncelle() {
+            const govde = document.getElementById('islemListesiGövde');
+            govde.innerHTML = "";
+            cikarilanEtiketlerListesi.forEach(islem => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${islem.seri}</b></td>
+                    <td>${islem.sira}</td>
+                    <td><mark style='background:#fff3cd; padding:2px;'>${islem.stokKodu}</mark></td>
+                    <td style='text-align:left;'>${islem.urunAdi}</td>
+                    <td><b>${islem.adet}</b></td>
+                `;
+                govde.appendChild(tr);
+            });
+        }
+
+        function islemListesiniGosterGizle() {
+            const panel = document.getElementById('islemListesiPaneli');
+            if(panel.style.display === "block") {
+                panel.style.display = "none";
+            } else {
+                panel.style.display = "block";
+                tabloyuGuncelle();
+            }
+        }
+
         function katalogUrunSorgula() {
             const girilenBarkod = document.getElementById('katalogNewBarcode').value.trim();
             const injectPanel = document.getElementById('injectFormPanel');
             injectPanel.style.display = "none";
 
             if(!girilenBarkod) { alert("Barkod girin!"); return; }
-            const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenBarkod);
+            const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenBarkod || u.stokkodu === girilenBarkod);
 
             if(urun) {
-                alert(`Bu ürün zaten katalogda kayıtlı:\n"${urun.adi}"`);
+                alert(`Bu ürün zaten sistemde kayıtlı:\n"${urun.adi}"`);
                 document.getElementById('katalogArama').value = girilenBarkod;
                 katalogFiltrele();
             } else {
@@ -663,13 +896,16 @@
 
             if(!_isim) { alert("Ürün adı zorunlu!"); return; }
 
+            // 🎯 Burası çakışma yapmayan benzersiz 4-5 haneli kodu üreten yerdir
+            const uretilenBenzersizKod = benzersizAltKodUret();
+
             const yeniUrun = {
                 barkod: tarananKatalogGeciciBarkod,
                 adi: _isim,
                 birim: "1 (Adet)",
                 miktar: "0",
                 fiyat: _fiyat,
-                stokkodu: "000" + Math.floor(10000 + Math.random() * 90000),
+                stokkodu: uretilenBenzersizKod, // Üretilen benzersiz alt kod buraya atanıyor
                 grupkodu: "02000",
                 ozelkod: "100293",
                 mensei: "%18",
@@ -683,12 +919,13 @@
             aktifMağazaVeritabani.unshift(yeniUrun);
             veritabaniniKaydet();
 
+            alert(`Stok Kartı Başarıyla Kaydedildi!\nÜretilen Benzersiz Kod: ${uretilenBenzersizKod}`);
+
             document.getElementById('injectName').value = "";
             document.getElementById('injectPrice').value = "";
             document.getElementById('katalogNewBarcode').value = "";
             document.getElementById('injectFormPanel').style.display = "none";
             stokKartlariniListele();
-            alert("Stok Kartı Başarıyla Kaydedildi!");
         }
 
         function stokKartlariniListele(filtreMetni = "") {
@@ -696,15 +933,16 @@
             govde.innerHTML = "";
 
             aktifMağazaVeritabani.forEach((urun, index) => {
-                if(filtreMetni && !urun.adi.toLowerCase().includes(filtreMetni) && !urun.barkod.includes(filtreMetni)) {
+                if(filtreMetni && !urun.adi.toLowerCase().includes(filtreMetni) && !urun.barkod.includes(filtreMetni) && !urun.stokkodu.includes(filtreMetni)) {
                     return; 
                 }
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td style="text-align:left;">
-                        <small style="color:#888;">${urun.barkod}</small><br>
-                        <b>${urun.adi}</b>
+                        <small style="color:#888;">Ana Barkod: ${urun.barkod}</small><br>
+                        <b>${urun.adi}</b><br>
+                        <small style="color:#2b78c5; font-weight:bold;">Sistem Kodu: ${urun.stokkodu}</small>
                     </td>
                     <td>
                         <input type="text" class="inline-input" id="price-${index}" value="${urun.fiyat}">
@@ -743,7 +981,7 @@
             const yeniIsim = document.getElementById('editNameField').value.trim();
 
             if(!yeniBarkod || !yeniIsim) {
-                alert("Barkod numarası ve ürün adı boş bırakılamaz!");
+                alert("Alanlar boş bırakılamaz!");
                 return;
             }
 
@@ -752,7 +990,7 @@
             veritabaniniKaydet();
             duzenlemeKapat();
             stokKartlariniListele();
-            alert("Stok kartı başarıyla güncellendi!");
+            alert("Başarıyla güncellendi!");
         }
 
         function duzenlemeKapat() {
@@ -762,8 +1000,7 @@
 
         function urunKalıcıSil(index) {
             const urun = aktifMağazaVeritabani[index];
-            const onay = confirm(`"${urun.adi}" isimli ürünü katalogdan tamamen silmek istediğinize emin misiniz?`);
-            if(onay) {
+            if(confirm(`"${urun.adi}" tamamen silinsin mi?`)) {
                 aktifMağazaVeritabani.splice(index, 1);
                 veritabaniniKaydet();
                 stokKartlariniListele();
@@ -771,8 +1008,7 @@
         }
 
         function katalogFiltrele() {
-            const metin = document.getElementById('katalogArama').value.toLowerCase().trim();
-            stokKartlariniListele(metin);
+            stokKartlariniListele(document.getElementById('katalogArama').value.toLowerCase().trim());
         }
 
         function durumDegistir(index) {
@@ -781,12 +1017,10 @@
         }
 
         function fiyatVeAdetGonder(index) {
-            const yeniFiyat = document.getElementById(`price-${index}`).value.trim();
-            const yeniAdet = parseInt(document.getElementById(`qty-${index}`).value) || 0;
-            aktifMağazaVeritabani[index].fiyat = yeniFiyat;
-            aktifMağazaVeritabani[index].miktar = yeniAdet;
+            aktifMağazaVeritabani[index].fiyat = document.getElementById(`price-${index}`).value.trim();
+            aktifMağazaVeritabani[index].miktar = document.getElementById(`qty-${index}`).value || 0;
             veritabaniniKaydet();
-            alert("Sistem Güncellendi!");
+            alert("Güncellendi!");
         }
 
         function ekranDegistir(screenId) {
@@ -804,6 +1038,7 @@
         function temizleStokEkran() {
             document.getElementById('barcodeInput').value = '';
             document.getElementById('productTitle').innerText = '';
+            aktifSeciliUrun = null;
             resetInfolar();
         }
 
@@ -825,4 +1060,3 @@
     </script>
 </body>
 </html>
-                
