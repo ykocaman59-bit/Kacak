@@ -181,7 +181,7 @@
             filter: invert(1);
         }
 
-        /* 📊 Fotoğraftaki 2 Sütunlu Stok Detay Grid Yapısı */
+        /* 📊 Çift Sütunlu Stok Detay Grid Yapısı */
         .stok-grid-container {
             display: grid;
             grid-template-columns: 1.1fr 1fr;
@@ -271,6 +271,7 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .hidden-inject-form {
@@ -291,6 +292,26 @@
             border-radius: 4px;
         }
 
+        /* Canlı Düzenleme Paneli */
+        .edit-box {
+            background: #e2f0d9;
+            border: 1px solid #b4c6e7;
+            color: #385723;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .edit-box input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
         /* Tablo Yapısı */
         .search-box {
             width: 100%;
@@ -298,6 +319,7 @@
             margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            font-size: 14px;
         }
 
         .card-table {
@@ -311,9 +333,69 @@
             border: 1px solid #ddd;
             padding: 8px 4px;
             text-align: center;
+            vertical-align: middle;
         }
 
         .card-table th { background-color: #4a86e8; color: white; }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 34px;
+            height: 18px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 12px;
+            width: 12px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: #5cb85c; }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        .inline-input {
+            width: 55px;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        .action-btn {
+            border: none;
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            font-size: 11px;
+            margin: 2px 0;
+            display: block;
+            width: 100%;
+        }
+
+        .btn-send { background-color: #5cb85c; }
+        .btn-edit { background-color: #f0ad4e; }
+        .btn-delete { background-color: #d9534f; }
     </style>
 </head>
 <body>
@@ -404,7 +486,7 @@
         <div class="bottom-action-bar">
             <input type="number" class="qty-input" value="1">
             <button class="blue-action-btn" style="border-radius:12px;" onclick="alert('Eklendi')">Ekle</button>
-            <button class="blue-action-btn" style="border-radius:12px; background-color:#4a86e8;" onclick="alert('İşlem Detayları Açılıyor')">İşlem Detayları</button>
+            <button class="blue-action-btn" style="border-radius:12px;" onclick="alert('İşlem Detayları Açılıyor')">İşlem Detayları</button>
         </div>
     </main>
 
@@ -429,15 +511,35 @@
                 <strong style="color:#856404; font-size:12px;">⚠️ SİSTEMDE YOK! KART TANIMLANIYOR:</strong>
                 <input type="text" id="injectName" placeholder="Ürün Adı">
                 <input type="text" id="injectPrice" placeholder="Satış Fiyatı">
-                <button class="blue-action-btn" style="width:100%; background-color:#5cb85c; border-radius:4px;" onclick="canliSistemeEnjekteEt()">✔ Stok Kartını Sisteme Kaydet</button>
+                <button class="action-btn btn-send" style="padding:10px; width:100%; border-radius:4px;" onclick="canliSistemeEnjekteEt()">✔ Stok Kartını Sisteme Kaydet</button>
+            </div>
+        </div>
+
+        <div class="edit-box" id="editPanel">
+            <strong>✏️ STOK KARTI DÜZENLEME PANELİ</strong>
+            <p style="font-size: 11px; margin-top:3px;">Ürünün bilgilerini güncelleyin:</p>
+            <label style="font-size:12px; font-weight:bold;">Barkod No:</label>
+            <input type="text" id="editBarcodeField">
+            <label style="font-size:12px; font-weight:bold;">Ürün Adı:</label>
+            <input type="text" id="editNameField">
+            <div style="display: flex; gap: 10px;">
+                <button class="action-btn btn-send" style="padding:8px; flex:1;" onclick="stokKartiniGuncelle()">Güncelle</button>
+                <button class="action-btn btn-delete" style="padding:8px; flex:1;" onclick="duzenlemeKapat()">İptal</button>
             </div>
         </div>
         
-        <input type="text" class="search-box" id="katalogArama" placeholder="Canlı ara..." oninput="katalogFiltrele()">
+        <input type="text" class="search-box" id="katalogArama" placeholder="Katalog içinde canlı ara..." oninput="katalogFiltrele()">
+        
         <div style="overflow-x:auto;">
             <table class="card-table">
                 <thead>
-                    <tr><th>Barkod / Ürün Adı</th><th>Fiyat</th><th>Stok</th><th>İşlem</th></tr>
+                    <tr>
+                        <th>Barkod / Ürün Adı</th>
+                        <th>Fiyat (TL)</th>
+                        <th>Stok Adet</th>
+                        <th>Durum</th>
+                        <th>İşlemler</th>
+                    </tr>
                 </thead>
                 <tbody id="stokKartlariGövde"></tbody>
             </table>
@@ -451,10 +553,11 @@
 
         let aktifMağazaVeritabani = [];
         let html5QrcodeScanner = null;
+        let duzenlenenUrunIndex = null;
         let tarananKatalogGeciciBarkod = "";
 
         function veritabaniniYukle() {
-            const hafizadakiVeri = localStorage.getItem('canli_erp_katalog_v7');
+            const hafizadakiVeri = localStorage.getItem('canli_erp_katalog_v8');
             if(hafizadakiVeri) {
                 aktifMağazaVeritabani = JSON.parse(hafizadakiVeri);
             } else {
@@ -464,7 +567,7 @@
         }
 
         function veritabaniniKaydet() {
-            localStorage.setItem('canli_erp_katalog_v7', JSON.stringify(aktifMağazaVeritabani));
+            localStorage.setItem('canli_erp_katalog_v8', JSON.stringify(aktifMağazaVeritabani));
         }
 
         function kameraAc(containerId, inputId, tip) {
@@ -544,10 +647,13 @@
             const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenBarkod);
 
             if(urun) {
-                alert(`Kayıtlı ürün: ${urun.adi}`);
+                alert(`Bu ürün zaten katalogda kayıtlı:\n"${urun.adi}"`);
+                document.getElementById('katalogArama').value = girilenBarkod;
+                katalogFiltrele();
             } else {
                 tarananKatalogGeciciBarkod = girilenBarkod;
                 injectPanel.style.display = "block";
+                document.getElementById('injectName').focus();
             }
         }
 
@@ -582,29 +688,117 @@
             document.getElementById('katalogNewBarcode').value = "";
             document.getElementById('injectFormPanel').style.display = "none";
             stokKartlariniListele();
-            alert("Sisteme Başarıyla Kaydedildi!");
+            alert("Stok Kartı Başarıyla Kaydedildi!");
         }
 
         function stokKartlariniListele(filtreMetni = "") {
             const govde = document.getElementById('stokKartlariGövde');
             govde.innerHTML = "";
-            aktifMağazaVeritabani.forEach((urun) => {
-                if(filtreMetni && !urun.adi.toLowerCase().includes(filtreMetni) && !urun.barkod.includes(filtreMetni)) return;
+
+            aktifMağazaVeritabani.forEach((urun, index) => {
+                if(filtreMetni && !urun.adi.toLowerCase().includes(filtreMetni) && !urun.barkod.includes(filtreMetni)) {
+                    return; 
+                }
+
                 const row = document.createElement('tr');
-                row.innerHTML = `<td>${urun.adi}<br><small>${urun.barkod}</small></td><td>${urun.fiyat}</td><td>${urun.miktar}</td><td>Kayıtlı</td>`;
+                row.innerHTML = `
+                    <td style="text-align:left;">
+                        <small style="color:#888;">${urun.barkod}</small><br>
+                        <b>${urun.adi}</b>
+                    </td>
+                    <td>
+                        <input type="text" class="inline-input" id="price-${index}" value="${urun.fiyat}">
+                    </td>
+                    <td>
+                        <input type="number" class="inline-input" id="qty-${index}" value="${urun.miktar}">
+                    </td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" ${urun.aktif ? 'checked' : ''} onchange="durumDegistir(${index})">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td>
+                        <button class="action-btn btn-send" onclick="fiyatVeAdetGonder(${index})">Gönder</button>
+                        <button class="action-btn btn-edit" onclick="duzenlemeModunuAc(${index})">✏️ Düzenle</button>
+                        <button class="action-btn btn-delete" onclick="urunKalıcıSil(${index})">🗑️ Sil</button>
+                    </td>
+                `;
                 govde.appendChild(row);
             });
         }
 
+        function duzenlemeModunuAc(index) {
+            duzenlenenUrunIndex = index;
+            const urun = aktifMağazaVeritabani[index];
+            document.getElementById('editBarcodeField').value = urun.barkod;
+            document.getElementById('editNameField').value = urun.adi;
+            document.getElementById('editPanel').style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function stokKartiniGuncelle() {
+            if(duzenlenenUrunIndex === null) return;
+            const yeniBarkod = document.getElementById('editBarcodeField').value.trim();
+            const yeniIsim = document.getElementById('editNameField').value.trim();
+
+            if(!yeniBarkod || !yeniIsim) {
+                alert("Barkod numarası ve ürün adı boş bırakılamaz!");
+                return;
+            }
+
+            aktifMağazaVeritabani[duzenlenenUrunIndex].barkod = yeniBarkod;
+            aktifMağazaVeritabani[duzenlenenUrunIndex].adi = yeniIsim;
+            veritabaniniKaydet();
+            duzenlemeKapat();
+            stokKartlariniListele();
+            alert("Stok kartı başarıyla güncellendi!");
+        }
+
+        function duzenlemeKapat() {
+            document.getElementById('editPanel').style.display = "none";
+            duzenlenenUrunIndex = null;
+        }
+
+        function urunKalıcıSil(index) {
+            const urun = aktifMağazaVeritabani[index];
+            const onay = confirm(`"${urun.adi}" isimli ürünü katalogdan tamamen silmek istediğinize emin misiniz?`);
+            if(onay) {
+                aktifMağazaVeritabani.splice(index, 1);
+                veritabaniniKaydet();
+                stokKartlariniListele();
+            }
+        }
+
         function katalogFiltrele() {
-            stokKartlariniListele(document.getElementById('katalogArama').value.toLowerCase().trim());
+            const metin = document.getElementById('katalogArama').value.toLowerCase().trim();
+            stokKartlariniListele(metin);
+        }
+
+        function durumDegistir(index) {
+            aktifMağazaVeritabani[index].aktif = !aktifMağazaVeritabani[index].aktif;
+            veritabaniniKaydet();
+        }
+
+        function fiyatVeAdetGonder(index) {
+            const yeniFiyat = document.getElementById(`price-${index}`).value.trim();
+            const yeniAdet = parseInt(document.getElementById(`qty-${index}`).value) || 0;
+            aktifMağazaVeritabani[index].fiyat = yeniFiyat;
+            aktifMağazaVeritabani[index].miktar = yeniAdet;
+            veritabaniniKaydet();
+            alert("Sistem Güncellendi!");
         }
 
         function ekranDegistir(screenId) {
             kameraKapat();
             document.querySelectorAll('.app-content').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
-            if(screenId === 'screen-stok-cards') stokKartlariniListele();
+            if(screenId === 'screen-stok-cards') {
+                document.getElementById('katalogArama').value = "";
+                document.getElementById('injectFormPanel').style.display = "none";
+                duzenlemeKapat();
+                stokKartlariniListele();
+            }
         }
 
         function temizleStokEkran() {
@@ -631,4 +825,4 @@
     </script>
 </body>
 </html>
-            
+                
