@@ -61,8 +61,12 @@
         .scanner-bottom-status { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); color: #ffffff; font-size: 18px; font-weight: bold; text-align: center; width: 90%; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); z-index: 11; }
         .scanner-exit-btn { position: absolute; top: 20px; right: 20px; background: rgba(0, 0, 0, 0.5); color: white; border: 1px solid rgba(255, 255, 255, 0.3); width: 36px; height: 36px; border-radius: 50%; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 12; pointer-events: auto; }
 
-        /* Yönetim Sayfası */
+        /* Yönetim Sayfası ve Düzenleme Paneli */
         .katalog-add-box { background: #ffffff; border: 1px solid #b4c6e7; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .edit-box { background: #e2f0d9; border: 1px solid #b4c6e7; color: #385723; padding: 15px; border-radius: 8px; margin-bottom: 15px; display: none; }
+        .edit-box label { font-size: 12px; font-weight: bold; display: block; margin-top: 8px; }
+        .edit-box input, .edit-box select { width: 100%; padding: 8px; margin-top: 3px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; }
+
         .hidden-inject-form { background: #fff3cd; border: 1px solid #ffeeba; padding: 12px; border-radius: 6px; margin-top: 10px; display: none; }
         .hidden-inject-form label { font-size: 12px; font-weight: bold; color: #555; display: block; margin-top: 8px; }
         .hidden-inject-form input, .hidden-inject-form select { width: 100%; padding: 8px; margin-top: 3px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; }
@@ -74,7 +78,12 @@
         /* Ortak Modallar */
         .custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
         .modal-body { background: white; width: 100%; max-width: 400px; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        
+        .modal-title { font-size: 16px; font-weight: bold; color: #4a86e8; margin-bottom: 15px; border-bottom: 2px solid #f4f6f9; padding-bottom: 8px; }
+
+        /* Fotoğraftaki Seçim Grubu Tasarımı */
+        .radio-inline-group { display: flex; gap: 20px; margin-bottom: 12px; background: #f8f9fa; padding: 8px; border-radius: 6px; border: 1px solid #eee; }
+        .radio-option { display: flex; align-items: center; gap: 6px; font-weight: bold; font-size: 14px; cursor: pointer; }
+
         .global-alert-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 99999; justify-content: center; align-items: center; }
         .global-alert-body { background: white; padding: 20px 25px; border-radius: 10px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.25); }
         .global-alert-text { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 18px; }
@@ -131,25 +140,27 @@
 
         <div class="stok-grid-container">
             <div class="grid-cell"><span class="grid-label">Birim :</span><span class="grid-value" id="val-birim">-</span></div>
+            <div class="grid-cell"><span class="grid-label">Stok Kodu :</span><span class="grid-value" id="val-stokkodu">-</span></div>
+
             <div class="grid-cell"><span class="grid-label">Miktar :</span><span class="grid-value" id="val-miktar">-</span></div>
-
             <div class="grid-cell"><span class="grid-label">Birim Fiyatı :</span><span class="grid-value" id="val-fiyat">-</span></div>
+
             <div class="grid-cell"><span class="grid-label">Diğer Fiyat:</span><span class="grid-value" id="val-digerfiyat">-</span></div>
-
             <div class="grid-cell"><span class="grid-label">Menşei :</span><span class="grid-value" id="val-mensei">-</span></div>
-            <div class="grid-cell"><span class="grid-label">Raf Kodu :</span><span class="grid-value" id="val-rafkodu">-</span></div>
 
+            <div class="grid-cell"><span class="grid-label">Raf Kodu :</span><span class="grid-value" id="val-rafkodu">-</span></div>
             <div class="grid-cell">
+                <span class="grid-label">Fiyat Seç:</span>
+                <select class="grid-select" id="val-fiyatsec"><option value="Satis">Satış Fiyatı</option></select>
+            </div>
+
+            <div class="grid-cell" style="grid-column: span 2;">
                 <span class="grid-label">Dizayn Seç:</span>
                 <select class="grid-select" id="dizaynSecici" onchange="rafEtiketiSor(this)">
                     <option value="Raf Etiket">Raf Etiket</option>
                     <option value="Kucuk Etiket">Küçük Etiket</option>
                     <option value="Buyuk Etiket">Büyük İndirim Etiketi</option>
                 </select>
-            </div>
-            <div class="grid-cell">
-                <span class="grid-label">Fiyat Seç:</span>
-                <select class="grid-select" id="val-fiyatsec"><option value="Satis">Satış Fiyatı</option></select>
             </div>
 
             <div class="grid-cell" style="grid-column: span 2; margin-top: 5px;">
@@ -178,6 +189,41 @@
     </main>
 
     <main id="screen-stok-cards" class="app-content">
+        
+        <div class="edit-box" id="editPanel">
+            <strong style="font-size: 14px;">✏️ STOK KARTI DÜZENLEME PANELİ</strong>
+            
+            <label>Barkod:</label>
+            <input type="text" id="editBarcodeField">
+            
+            <label>Ürün Adı:</label>
+            <input type="text" id="editNameField">
+
+            <label>Birim Seçin:</label>
+            <select id="editBirimField">
+                <option value="Adet">Adet</option>
+                <option value="KG">KG</option>
+            </select>
+
+            <label>Birim Fiyatı (TL):</label>
+            <input type="number" id="editPriceField" step="0.01">
+
+            <label>Gramaj (Gr):</label>
+            <input type="number" id="editGramajField">
+
+            <label>Menşei Ülke:</label>
+            <select id="editMenseiField">
+                <option value="Türkiye">Türkiye</option><option value="Almanya">Almanya</option><option value="İtalya">İtalya</option>
+                <option value="Fransa">Fransa</option><option value="İspanya">İspanya</option><option value="Brezilya">Brezilya</option>
+                <option value="Mısır">Mısır</option><option value="Yunanistan">Yunanistan</option><option value="Çin">Çin</option>
+            </select>
+
+            <div style="display: flex; gap: 10px; margin-top: 12px;">
+                <button class="blue-action-btn" style="background:#5cb85c; flex:1; border-radius:4px;" onclick="stokKartiniGuncelle()">Güncelle</button>
+                <button class="blue-action-btn" style="background:#d9534f; flex:1; border-radius:4px;" onclick="duzenlemeKapat()">İptal</button>
+            </div>
+        </div>
+
         <div class="katalog-add-box">
             <h4 style="color:#4a86e8; margin-bottom:10px;">✨ Yeni Stok Kartı Tanımlama</h4>
             <div class="barcode-group">
@@ -209,7 +255,7 @@
                 <input type="number" id="injectPrice" placeholder="0.00">
 
                 <label>Birim Gramajı (Gr):</label>
-                <input type="number" id="injectGramaj" placeholder="Örn: 300 (Adet ise hesaplama için önemli)">
+                <input type="number" id="injectGramaj" placeholder="Örn: 300">
 
                 <label>Menşei Ülke Seçin:</label>
                 <select id="injectMensei">
@@ -219,7 +265,7 @@
                 </select>
 
                 <label>Ürün Görsel Linki (Opsiyonel):</label>
-                <input type="text" id="injectImgUrl" placeholder="https://... resmi linki">
+                <input type="text" id="injectImgUrl" placeholder="https://...">
 
                 <button class="blue-action-btn" style="width:100%; border-radius:4px; background:#5cb85c; margin-top:15px; padding:12px;" onclick="canliSistemeEnjekteEt()">✔ Stok Kartını Sisteme Kaydet</button>
             </div>
@@ -245,11 +291,22 @@
 
     <div class="custom-modal" id="manuelAramaModali">
         <div class="modal-body">
-            <div class="modal-title">🔍 Gelişmiş Manuel Arama</div>
-            <input type="text" id="manuelAramaInput" placeholder="Ürün adı veya barkod yazın..." style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:4px;">
+            <div class="modal-title">🔍 Manuel Arama</div>
+            
+            <div class="radio-inline-group">
+                <label class="radio-option">
+                    <input type="radio" name="searchType" value="adi" checked onchange="manuelAramaOdakla()"> Adı
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="searchType" value="kodu" onchange="manuelAramaOdakla()"> Kodu
+                </label>
+            </div>
+
+            <input type="text" id="manuelAramaInput" placeholder="Arama kelimesi veya kod girin..." style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:4px;" oninput="manuelAramaYap()">
+            
             <div id="manuelSonucAlani" style="max-height:180px; overflow-y:auto; margin-bottom:15px;"></div>
+            
             <div style="display:flex; gap:10px;">
-                <button class="blue-action-btn" style="flex:1;" onclick="manuelAramaYap()">Ara</button>
                 <button class="blue-action-btn" style="flex:1; background:#d9534f;" onclick="manuelAramaModaliKapat()">Kapat</button>
             </div>
         </div>
@@ -271,16 +328,16 @@
     </div>
 
     <script>
-        // Başlangıç veritabanı şablonu (Yusuf'un sistemine entegre)
         const varsayilanKatalog = [
-            { barkod: "8690504012345", adi: "Ülker Çikolatalı Gofret", birim: "Adet", miktar: "150", fiyat: "15.00", gramaj: "36", mensei: "Türkiye", rafkodu: "R-12", img: "https://images.deliveryhero.io/image/fd-tr/Products/11463134.jpg", stokkodu: "1001" },
-            { barkod: "8693333001122", adi: "Yerli Domates", birim: "KG", miktar: "45", fiyat: "40.00", gramaj: "1000", mensei: "Türkiye", rafkodu: "MANAV-1", img: "", stokkodu: "1002" }
+            { barkod: "8690504012345", adi: "Ülker Çikolatalı Gofret", birim: "Adet", miktar: "150", fiyat: "15.00", gramaj: "36", mensei: "Türkiye", rafkodu: "R-12", img: "https://images.deliveryhero.io/image/fd-tr/Products/11463134.jpg", stokkodu: "4815" },
+            { barkod: "8693333001122", adi: "Yerli Domates", birim: "KG", miktar: "45", fiyat: "40.00", gramaj: "1000", mensei: "Türkiye", rafkodu: "MANAV-1", img: "", stokkodu: "1623" }
         ];
 
         let aktifMağazaVeritabani = [];
         let tamEkranScannerNesnesi = null;
         let aktifSeciliUrun = null; 
         let cikarilanEtiketlerListesi = [];
+        let duzenlenenUrunIndex = null;
 
         function ozelAlert(mesaj) {
             document.getElementById('pencereAlertMetni').innerText = mesaj;
@@ -292,13 +349,13 @@
         }
 
         function veritabaniniYukle() {
-            const hafiza = localStorage.getItem('canli_erp_yusuf_store');
+            const hafiza = localStorage.getItem('canli_erp_yusuf_store_v11');
             if(hafiza) { aktifMağazaVeritabani = JSON.parse(hafiza); } 
             else { aktifMağazaVeritabani = [...varsayilanKatalog]; veritabaniniKaydet(); }
         }
 
         function veritabaniniKaydet() {
-            localStorage.setItem('canli_erp_yusuf_store', JSON.stringify(aktifMağazaVeritabani));
+            localStorage.setItem('canli_erp_yusuf_store_v11', JSON.stringify(aktifMağazaVeritabani));
         }
 
         // 📸 TAM EKRAN TARAYICI SİSTEMİ
@@ -308,20 +365,20 @@
             const durumYazisi = document.getElementById('scanner-status-text');
             
             scannerEkran.style.display = "block";
-            durumYazisi.innerText = "Barkod Okutunuz"; // Önce her zaman bu yazar
+            durumYazisi.innerText = "Barkod Okutunuz";
 
             tamEkranScannerNesnesi = new Html5Qrcode("global-reader-view");
             tamEkranScannerNesnesi.start(
                 { facingMode: "environment" },
                 { fps: 25, qrbox: { width: 260, height: 180 } },
                 (decodedText) => {
-                    durumYazisi.innerText = decodedText; // Okunduğunda barkod no görünür
+                    durumYazisi.innerText = decodedText;
                     document.getElementById(targetInputId).value = decodedText;
                     
                     setTimeout(() => {
                         tamEkranKameraKapat();
                         if(islemTipi === 'detay') {
-                            urunSorgula(decodedText, false, true); // Barkod ile taranınca tetiklendi
+                            urunSorgula(decodedText);
                         } else if(islemTipi === 'katalog') {
                             katalogUrunSorgula();
                         }
@@ -350,12 +407,12 @@
 
         function urunGetirManuel() {
             const code = document.getElementById('barcodeInput').value.trim();
-            if(!code) { ozelAlert("Lütfen barkod girin!"); return; }
-            urunSorgula(code, true, false); // Butonla getirildi
+            if(!code) { ozelAlert("Lütfen barkod veya stok kodu girin!"); return; }
+            urunSorgula(code);
         }
 
-        // 🔄 ÜRÜN SORGULAMA VE ASIL FİYAT HESAPLAMA MANTIĞI
-        function urunSorgula(girilenKod, manuelMi = false, kameraKanca = false) {
+        // 🔄 ÜRÜN SORGULAMA SİSTEMİ (HEM BARKOD HEM STOK KODUYLA ÇALIŞIR)
+        function urunSorgula(girilenKod) {
             if(!girilenKod) return;
             const urun = aktifMağazaVeritabani.find(u => u.barkod === girilenKod || u.stokkodu === girilenKod);
 
@@ -369,13 +426,14 @@
 
             // Alanları Doldurma
             document.getElementById('productTitle').innerText = urun.adi;
-            document.getElementById('val-birim').innerText = urun.birim; // Adetse adet, KG ise KG
-            document.getElementById('val-miktar').innerText = urun.miktar; // Stok adeti
+            document.getElementById('val-birim').innerText = urun.birim; 
+            document.getElementById('val-stokkodu').innerText = urun.stokkodu; // Stok kodu geri yüklendi
+            document.getElementById('val-miktar').innerText = urun.miktar; 
             document.getElementById('val-fiyat').innerText = parseFloat(urun.fiyat).toFixed(2) + " TL";
             document.getElementById('val-mensei').innerText = urun.mensei || "Türkiye";
             document.getElementById('val-rafkodu').innerText = urun.rafkodu || "-";
 
-            // 🧮 Diğer Fiyat (Asıl Fiyat) Matematiksel Formülü
+            // Asıl Fiyat Formülü
             let asilFiyat = 0;
             const birimFiyati = parseFloat(urun.fiyat) || 0;
             const gramaj = parseFloat(urun.gramaj) || 1000;
@@ -383,12 +441,11 @@
             if (urun.birim === "KG") {
                 asilFiyat = birimFiyati; 
             } else {
-                // Adet ise girilen Birim Fiyatına ve Ürün Gramajına göre asıl paket fiyatını hesapla
                 asilFiyat = (birimFiyati * gramaj) / 1000;
             }
             document.getElementById('val-digerfiyat').innerText = asilFiyat.toFixed(2) + " TL";
 
-            // 🖼️ Resim Butonu Kontrolü
+            // Resim Butonu Kontrolü
             const resimBtn = document.getElementById('stokResimBtn');
             if (urun.img && urun.img.trim() !== "") {
                 resimBtn.disabled = false;
@@ -398,10 +455,9 @@
                 resimBtn.style.background = "#ccc";
             }
 
-            // ⚡ OTO EKLEME MANTIĞI KONTROLÜ
+            // OTO EKLEME KONTROLÜ
             const otoEkleAktif = document.getElementById('otoEkleCheck').checked;
             if (otoEkleAktif) {
-                // Otomatik ekle seçiliyse direkt listeye ekle ve uyar
                 direktIslemListesineEkle();
                 ozelAlert("Etiket Basıldı");
             }
@@ -414,7 +470,6 @@
             }
         }
 
-        // Oto ekleme kapalıyken manuel basılan Ekle butonu
         function islemListesineEkleBtn() {
             if(!aktifSeciliUrun) { ozelAlert("Önce bir ürün getirmelisiniz!"); return; }
             direktIslemListesineEkle();
@@ -446,7 +501,50 @@
             panel.style.display = panel.style.display === "block" ? "none" : "block";
         }
 
-        // 🆕 KART YÖNETİMİ VE SİSTEME ENJEKTE ETME SİSTEMİ
+        // 🔍 MANUEL ARAMA VE ÇİFT KANALLI KOD SORGULAMA MANTIĞI (FOTOĞRAFTAKİ SİSTEM)
+        function manuelAramaModaliAc() {
+            document.getElementById('manuelAramaModali').style.display = "flex";
+            document.getElementById('manuelAramaInput').value = "";
+            document.getElementById('manuelSonucAlani').innerHTML = "";
+            document.querySelector('input[name="searchType"][value="adi"]').checked = true;
+        }
+
+        function manuelAramaModaliKapat() { document.getElementById('manuelAramaModali').style.display = "none"; }
+        function manuelAramaOdakla() { document.getElementById('manuelAramaInput').value = ""; document.getElementById('manuelSonucAlani').innerHTML = ""; document.getElementById('manuelAramaInput').focus(); }
+
+        function manuelAramaYap() {
+            const type = document.querySelector('input[name="searchType"]:checked').value;
+            const query = document.getElementById('manuelAramaInput').value.toLowerCase().trim();
+            const alan = document.getElementById('manuelSonucAlani');
+            alan.innerHTML = "";
+            if(!query) return;
+
+            let sonuclar = [];
+
+            if(type === 'adi') {
+                // Sadece isme göre filtreleme
+                sonuclar = aktifMağazaVeritabani.filter(u => u.adi.toLowerCase().includes(query));
+            } else {
+                // Kodu Seçiliyse: Hem barkod hem de oluşan sistem kodundan bulabilir
+                sonuclar = aktifMağazaVeritabani.filter(u => u.barkod.includes(query) || u.stokkodu.includes(query));
+            }
+
+            if(sonuclar.length === 0) { alan.innerHTML = "<span style='color:red;'>Eşleşen ürün bulunamadı.</span>"; return; }
+
+            sonuclar.forEach(u => {
+                const d = document.createElement('div');
+                d.style.padding = "8px"; d.style.borderBottom = "1px solid #eee"; d.style.cursor = "pointer"; d.style.background = "#f8f9fa"; d.style.marginBottom = "4px"; d.style.borderRadius = "4px";
+                d.innerHTML = `<b>${u.adi}</b><br><small style="color:#4a86e8;">Barkod: ${u.barkod} | Stok Kodu: ${u.stokkodu}</small>`;
+                d.onclick = function() {
+                    document.getElementById('barcodeInput').value = u.barkod;
+                    urunSorgula(u.barkod);
+                    manuelAramaModaliKapat();
+                };
+                alan.appendChild(d);
+            });
+        }
+
+        // ⚙️ STOK KARTLARI YÖNETİMİ & DÜZENLEME PANELİ
         function katalogUrunSorgula() {
             const bNo = document.getElementById('katalogNewBarcode').value.trim();
             const injectPanel = document.getElementById('injectFormPanel');
@@ -482,7 +580,7 @@
                 barkod: bNo,
                 adi: isim,
                 birim: birim,
-                miktar: "0", // İlk kayıt anında her zaman kilitli sıfır (0)
+                miktar: "0", 
                 fiyat: fiyat,
                 gramaj: gramaj,
                 mensei: mensei,
@@ -496,7 +594,6 @@
 
             ozelAlert(`Stok Kartı Sisteme Kayıt Edildi!\nSistem Kodu: ${rastgeleSistemKodu}`);
             
-            // Temizleme
             document.getElementById('injectName').value = "";
             document.getElementById('injectPrice').value = "";
             document.getElementById('injectGramaj').value = "";
@@ -506,62 +603,64 @@
             stokKartlariniListele();
         }
 
+        function duzenlemeModunuAc(index) {
+            duzenlenenUrunIndex = index;
+            const urun = aktifMağazaVeritabani[index];
+            document.getElementById('editBarcodeField').value = urun.barkod;
+            document.getElementById('editNameField').value = urun.adi;
+            document.getElementById('editBirimField').value = urun.birim;
+            document.getElementById('editPriceField').value = urun.fiyat;
+            document.getElementById('editGramajField').value = urun.gramaj;
+            document.getElementById('editMenseiField').value = urun.mensei || "Türkiye";
+            
+            document.getElementById('editPanel').style.display = "block";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function stokKartiniGuncelle() {
+            if(duzenlenenUrunIndex === null) return;
+            
+            const urun = aktifMağazaVeritabani[duzenlenenUrunIndex];
+            urun.barkod = document.getElementById('editBarcodeField').value.trim();
+            urun.adi = document.getElementById('editNameField').value.trim();
+            urun.birim = document.getElementById('editBirimField').value;
+            urun.fiyat = document.getElementById('editPriceField').value || "0";
+            urun.gramaj = document.getElementById('editGramajField').value || "1000";
+            urun.mensei = document.getElementById('editMenseiField').value;
+
+            veritabaniniKaydet();
+            duzenlemeKapat();
+            stokKartlariniListele();
+            ozelAlert("Stok kartı başarıyla güncellendi!");
+        }
+
+        function duzenlemeKapat() {
+            document.getElementById('editPanel').style.display = "none";
+            duzenlenenUrunIndex = null;
+        }
+
         function stokKartlariniListele(filtre = "") {
             const govde = document.getElementById('stokKartlariGövde');
             govde.innerHTML = "";
             aktifMağazaVeritabani.forEach((u, idx) => {
-                if(filtre && !u.adi.toLowerCase().includes(filtre) && !u.barkod.includes(filtre)) return;
+                if(filtre && !u.adi.toLowerCase().includes(filtre) && !u.barkod.includes(filtre) && !u.stokkodu.includes(filtre)) return;
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="text-align:left;"><b>${u.adi}</b><br><small style="color:#666;">B: ${u.barkod}</small></td>
+                    <td style="text-align:left;">
+                        <b>${u.adi}</b><br>
+                        <small style="color:#666;">B: ${u.barkod}</small><br>
+                        <small style="color:#4a86e8; font-weight:bold;">S.Kodu: ${u.stokkodu}</small>
+                    </td>
                     <td><b>${u.fiyat} TL</b><br><small style="color:purple;">${u.gramaj} Gr (${u.birim})</small></td>
                     <td><mark style="background:#ddd; padding:2px 5px; border-radius:3px; font-weight:bold;">${u.miktar}</mark></td>
-                    <td><button class="blue-action-btn" style="padding:4px 8px; font-size:11px; background:#d9534f;" onclick="stokKartiSil(${idx})">Sil</button></td>
+                    <td><button class="blue-action-btn" style="padding:6px 10px; font-size:12px; background:#f0ad4e; border-radius:6px;" onclick="duzenlemeModunuAc(${idx})">✏️ Düzenle</button></td>
                 `;
                 govde.appendChild(tr);
             });
         }
 
-        function stokKartiSil(index) {
-            if(confirm("Bu stok kartını silmek istediğinize emin misiniz?")) {
-                aktifMağazaVeritabani.splice(index, 1);
-                veritabaniniKaydet();
-                stokKartlariniListele();
-            }
-        }
-
         function katalogFiltrele() {
             stokKartlariniListele(document.getElementById('katalogArama').value.toLowerCase().trim());
-        }
-
-        function manuelAramaModaliAc() {
-            document.getElementById('manuelAramaModali').style.display = "flex";
-            document.getElementById('manuelAramaInput').value = "";
-            document.getElementById('manuelSonucAlani').innerHTML = "";
-        }
-
-        function manuelAramaModaliKapat() { document.getElementById('manuelAramaModali').style.display = "none"; }
-
-        function manuelAramaYap() {
-            const q = document.getElementById('manuelAramaInput').value.toLowerCase().trim();
-            const alan = document.getElementById('manuelSonucAlani');
-            alan.innerHTML = "";
-            if(!q) return;
-
-            const res = aktifMağazaVeritabani.filter(u => u.adi.toLowerCase().includes(q) || u.barkod.includes(q));
-            if(res.length === 0) { alan.innerHTML = "<span style='color:red;'>Ürün bulunamadı.</span>"; return; }
-
-            res.forEach(u => {
-                const d = document.createElement('div');
-                d.style.padding = "8px"; d.style.borderBottom = "1px solid #eee"; d.style.cursor = "pointer";
-                d.innerHTML = `<b>${u.adi}</b> - <small style="color:#4a86e8;">${u.barkod}</small>`;
-                d.onclick = function() {
-                    document.getElementById('barcodeInput').value = u.barkod;
-                    urunSorgula(u.barkod, true, false);
-                    manuelAramaModaliKapat();
-                };
-                alan.appendChild(d);
-            });
         }
 
         function rafEtiketiSor(el) { ozelAlert(`Şablon Düzeni Değişti: ${el.value}`); }
@@ -571,7 +670,7 @@
             tamEkranKameraKapat();
             document.querySelectorAll('.app-content').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if(id === 'screen-stok-cards') { stokKartlariniListele(); }
+            if(id === 'screen-stok-cards') { duzenlemeKapat(); stokKartlariniListele(); }
         }
 
         function temizleStokEkran() {
@@ -585,6 +684,7 @@
 
         function resetInfolar() {
             document.getElementById('val-birim').innerText = '-';
+            document.getElementById('val-stokkodu').innerText = '-';
             document.getElementById('val-miktar').innerText = '-';
             document.getElementById('val-fiyat').innerText = '-';
             document.getElementById('val-digerfiyat').innerText = '-';
