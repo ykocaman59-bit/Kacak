@@ -467,14 +467,15 @@
         }
 
         function islemListesineEkleBtn() {
-            if(!aktifSeciliUrun) { ozelAlert("Önce bir ürün getirmemisiniz!", false); return; }
+            if(!aktifSeciliUrun) { ozelAlert("Önce bir ürün getirmelisiniz!", false); return; }
             direktIslemListesineEkle();
             ozelAlert("Etiket Basıldı", true);
         }
 
-        // 📋 BENZERSİZ SATIR VE SIRALAMA MANTIĞI (GÜNCELLENEN KISIM)
+        // 📋 BENZERSİZ SATIR, SIRALAMA MANTIĞI VE SIFIRLAMA
         function direktIslemListesineEkle() {
-            const miktar = parseInt(document.getElementById('islemAdetInput').value) || 1;
+            const miktarInput = document.getElementById('islemAdetInput');
+            const miktar = parseInt(miktarInput.value) || 1;
             const bkod = aktifSeciliUrun.barkod;
             
             if(benzersizIslemMap[bkod]) {
@@ -490,6 +491,11 @@
                 };
             }
             tabloyuGuncelle();
+
+            // SIFIRLAMA İŞLEMLERİ:
+            // Ürün bilgileri sıfırlanır ve miktar kutusu tekrar 1 yapılır.
+            temizleStokEkran();
+            miktarInput.value = "1";
         }
 
         function tabloyuGuncelle() {
@@ -699,7 +705,7 @@
             }
         }
 
-        function katalogFiltrele() { stokKartlariniListele(document.getElementById('katalogArama').value.toLowerCase().trim()); }
+        function catalogFiltrele() { stokKartlariniListele(document.getElementById('katalogArama').value.toLowerCase().trim()); }
         
         // Ev tuşu veya ana menüye dönüş tetiklendiğinde detaylar sıfırlanıyor
         function anaMenuyeDon() { 
@@ -707,6 +713,7 @@
             seriSayaci = 0;         // Seri sayacını sıfırla
             tabloyuGuncelle();
             temizleStokEkran(); 
+            document.getElementById('islemAdetInput').value = "1";
             manuelAramaArayuzunuKapat(); 
             ekranDegistir('screen-menu'); 
         }
@@ -717,6 +724,7 @@
                 benzersizIslemMap = {}; // Ana menüye her geçişte detay listesini uçur
                 seriSayaci = 0;         // Seri sayacını sıfırla
                 tabloyuGuncelle();
+                document.getElementById('islemAdetInput').value = "1";
             }
             document.querySelectorAll('.app-content').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
