@@ -290,7 +290,7 @@
                         </tr>
                     </thead>
                     <tbody id="islemListesiGövde">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -353,6 +353,7 @@
         let tamEkranScannerNesnesi = null;
         let aktifSeciliUrun = null; 
         let benzersizIslemMap = {}; // Barkod bazlı benzersiz sıralama nesnesi
+        let seriSayaci = 0;          // Benzersiz barkodlar için seri sayacı
         let duzenlenenUrunIndex = null;
         let geciciSecilenBarkod = null;
         let seciliAramaTipi = "ADI";
@@ -466,23 +467,24 @@
         }
 
         function islemListesineEkleBtn() {
-            if(!aktifSeciliUrun) { ozelAlert("Önce bir ürün getirmelisiniz!", false); return; }
+            if(!aktifSeciliUrun) { ozelAlert("Önce bir ürün getirmemisiniz!", false); return; }
             direktIslemListesineEkle();
             ozelAlert("Etiket Basıldı", true);
         }
 
-        // 📋 BENZERSİZ SATIR VE SIRALAMA MANTIĞI
+        // 📋 BENZERSİZ SATIR VE SIRALAMA MANTIĞI (GÜNCELLENEN KISIM)
         function direktIslemListesineEkle() {
             const miktar = parseInt(document.getElementById('islemAdetInput').value) || 1;
             const bkod = aktifSeciliUrun.barkod;
             
             if(benzersizIslemMap[bkod]) {
-                // Eğer ürün zaten eklendiyse, satır türetmez adedi birleştirir
+                // Eğer ürün zaten eklendiyse, SERI no sabit kalır, SIRA (adet) eklenerek güncellenir.
                 benzersizIslemMap[bkod].adet += miktar;
             } else {
-                // İlk defa eklenen ürünü sırayla hafızaya alır
+                // İlk defa eklenen ürün için yeni bir SERI numarası atanır.
+                seriSayaci++;
                 benzersizIslemMap[bkod] = {
-                    seri: "", 
+                    seri: seriSayaci, 
                     stokKodu: aktifSeciliUrun.stokkodu,
                     adet: miktar
                 };
@@ -493,18 +495,16 @@
         function tabloyuGuncelle() {
             const govde = document.getElementById('islemListesiGövde');
             govde.innerHTML = "";
-            let counter = 1;
             
             for(let key in benzersizIslemMap) {
                 const item = benzersizIslemMap[key];
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="width:33%; padding: 12px 4px;">${item.seri}</td>
-                    <td style="width:34%; padding: 12px 4px;">${counter} (${item.adet} Adet)</td>
+                    <td style="width:34%; padding: 12px 4px;">${item.adet}</td>
                     <td style="width:33%; padding: 12px 4px;">${item.stokKodu}</td>
                 `;
                 govde.appendChild(tr);
-                counter++;
             }
         }
 
@@ -704,6 +704,7 @@
         // Ev tuşu veya ana menüye dönüş tetiklendiğinde detaylar sıfırlanıyor
         function anaMenuyeDon() { 
             benzersizIslemMap = {}; // Detayları sıfırla
+            seriSayaci = 0;         // Seri sayacını sıfırla
             tabloyuGuncelle();
             temizleStokEkran(); 
             manuelAramaArayuzunuKapat(); 
@@ -714,6 +715,7 @@
             tamEkranKameraKapat();
             if(id === 'screen-menu') {
                 benzersizIslemMap = {}; // Ana menüye her geçişte detay listesini uçur
+                seriSayaci = 0;         // Seri sayacını sıfırla
                 tabloyuGuncelle();
             }
             document.querySelectorAll('.app-content').forEach(s => s.classList.remove('active'));
