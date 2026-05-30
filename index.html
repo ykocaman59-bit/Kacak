@@ -502,7 +502,7 @@
         let duzenlenecekSatirIndex = null;
         let evrakGetirleMiYuklendi = false; 
 
-        // Onay Callback Fonksiyonu Hafızası
+        // Onay Hafızası
         let aktifOnayCallback = null;
 
         function ozelAlert(mesaj, barkodTemizlensinMi = false) {
@@ -519,7 +519,6 @@
             }
         }
 
-        // 🎯 KURAL: Özel Evet/Hayır Onay Penceresi Motoru
         function ozelOnaySor(mesaj, evetCallback) {
             document.getElementById('pencereOnayMetni').innerText = mesaj;
             aktifOnayCallback = evetCallback;
@@ -536,7 +535,6 @@
             aktifOnayCallback = null;
         }
 
-        // Bugünün Tarihini YYYY-MM-DD formatında alma fonksiyonu
         function getBugununTarihi() {
             const d = new Date();
             let ay = '' + (d.getMonth() + 1);
@@ -552,7 +550,11 @@
             if(hafiza) { aktifMağazaVeritabani = JSON.parse(hafiza); } 
             else { aktifMağazaVeritabani = [...varsayilanKatalog]; veritabaniniKaydet(); }
 
-            const cari cariHafiza = localStorage.getItem('erp_cari_kartlari');
+            const cariHafiza = localStorage.getItem('erp_cari_kartlari');
+            if(cariHafiza) { carilerVeritabani = JSON.parse(cariHafiza); }
+            else { aktifMağazaVeritabani = [...varsayilanKatalog]; veritabaniniKaydet(); }
+
+            const cariHafiza = localStorage.getItem('erp_cari_kartlari');
             if(cariHafiza) { carilerVeritabani = JSON.parse(cariHafiza); }
             else { carilerVeritabani = ["ÖZ HİLAL GIDA", "AKDENİZ TOPTAN", "BAŞAK BİSKÜVİ"]; carilerKaydet(); }
 
@@ -840,7 +842,6 @@
 
         function irsaliyeEvrakAnlıkHafizaKaydet() {
             if(irsaliyeSeciliCari !== "Seçilmedi" || irsaliyeSatirlari.length > 0) {
-                // Bugünü dinamik kaydetmek için tarih verisini alalım
                 const tarihDamgasi = getBugununTarihi();
                 evraklarArsivi[aktifIrsaliyeBelgeNo] = {
                     belgeNo: aktifIrsaliyeBelgeNo,
@@ -897,7 +898,6 @@
             ozelAlert("Yeni boş evrak açıldı.");
         }
 
-        // 🎯 KURAL: Evrak Silme işleminde özel tasarım Evet / Hayır onay penceresi tetiklenir
         function tetikleEvrakSilOnay() {
             ozelOnaySor("Evrak silmek istediğinize emin misiniz?", function() {
                 irsaliyeEvrakSilGerçekleştir();
@@ -927,23 +927,19 @@
             ozelAlert("Evrak ve tüm bağlı hareketleri sistemden komple silindi.");
         }
 
-        // EVRAK GETİR PENCERESİ MODAL MANTIĞI
         function openEvrakGetirPenceresiModal() {
             document.getElementById('evrakGetirModalBaslik').innerText = aktifIrsaliyeTipi === "ALIS" ? "Alış Evrak Arşivi" : "Satış Evrak Arşivi";
             document.getElementById('archiveSearchBelgeNoInput').value = "";
             
-            // 🎯 KURAL: İlk başta açılan penceredeki her iki kutuda da otomatik BUGÜNÜN tarihi yazacak
             const bugun = getBugununTarihi();
             document.getElementById('irsaliyeTarihIlk').value = bugun;
             document.getElementById('irsaliyeTarihSon').value = bugun;
             
-            // KURAL: İlk başta alt taraf boş kalır, evrakları listelemek için buton beklenir
             document.getElementById('irsaliyeSorguSonucAlani').innerHTML = "<div style='padding:15px; color:#666; text-align:center; font-weight:bold;'>Evrakları listelemek için 'Evrakları Getir' butonuna basın.</div>";
             
             document.getElementById('evrakGetirPenceresiModali').style.display = 'flex';
         }
 
-        // 🎯 KURAL: Butona basıldığında evrakları tarihe veya aramaya göre süzen ve dizen motor
         function irsaliyeEvraklariSorgulaGetir() {
             const alan = document.getElementById('irsaliyeSorguSonucAlani');
             alan.innerHTML = "";
@@ -957,10 +953,8 @@
             for(let k in evraklarArsivi) {
                 const evrak = evraklarArsivi[k];
                 if(evrak.tip === aktifIrsaliyeTipi) {
-                    // Belge no araması varsa süz
                     if(arananNo && !evrak.belgeNo.toLowerCase().includes(arananNo)) continue;
                     
-                    // Tarih Aralığı Kontrolü (örn: ayın 2'si ile 30'u arası)
                     if(evrak.tarih) {
                         if(tIlk && evrak.tarih < tIlk) continue;
                         if(tSon && evrak.tarih > tSon) continue;
@@ -970,7 +964,6 @@
                 }
             }
 
-            // 🎯 KURAL: Alınan tarihe ve numaraya göre sıralama (Yeniden eskiye doğru dizilim)
             eslesenEvraklar.sort((a, b) => b.belgeNo.localeCompare(a.belgeNo));
 
             if(eslesenEvraklar.length === 0) {
@@ -1001,7 +994,6 @@
             });
         }
 
-        // CARİ SEÇİM ALANI
         function openIrsaliyeCariSecArayuz() {
             document.getElementById('irsaliyeCariAraInput').value = "";
             irsaliyeCariListesiDoldur();
@@ -1031,7 +1023,6 @@
             document.getElementById('sub-screen-irsaliye-cari-sec').style.display = "none";
         }
 
-        // BARKOD GİRİŞİ SORGULAMA
         function irsaliyeBarkodGirisEkraniAc() {
             if(irsaliyeSeciliCari === "Seçilmedi") {
                 ozelAlert("HATA: Önce bir cari seçmelisiniz!"); return;
@@ -1085,7 +1076,6 @@
             ozelAlert("Ürün evrağa işlendi.");
         }
 
-        // STOK ADET DEĞİŞİM MOTORU
         function stokMiktariniDegistirArkaPlan(barkod, miktar, tersineCevir = false) {
             const urun = aktifMağazaVeritabani.find(u => u.barkod === barkod);
             if(!urun) return;
@@ -1098,7 +1088,6 @@
             urun.miktar = yeniMiktar.toString();
         }
 
-        // İŞLEM SATIRLARI
         function irsaliyeIslemSatirlariAc() {
             if(irsaliyeSeciliCari === "Seçilmedi") {
                 ozelAlert("HATA: Önce bir cari seçmelisiniz!"); return;
@@ -1266,6 +1255,16 @@
 
         function catalogFiltrele() { stokKartlariniListele(document.getElementById('katalogArama').value.toLowerCase().trim()); }
         
+        // EKRAN DEĞİŞTİRME FONKSİYONU
+        function ekranDegistir(id) {
+            tamEkranKameraKapat();
+            document.querySelectorAll('.app-content').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'screen-stok-cards') { duzenlemeKapat(); stokKartlariniListele(); }
+            if(id === 'screen-stok-detail') { manuelAramaArayuzunuKapat(); }
+            if(id === 'screen-cari-kartlar') { document.getElementById('cariKartAramaInput').value = ""; cariKartlariniListele(); }
+        }
+
         // ANA MENÜYE GÜVENLİ DÖNÜŞ MOTORU
         function direktAnaMenuyeZorlaDon() {
             if(aktifIrsaliyeBelgeNo && evraklarArsivi[aktifIrsaliyeBelgeNo]) {
@@ -1290,15 +1289,6 @@
         }
 
         function anaMenuyeDon() { direktAnaMenuyeZorlaDon(); }
-        
-        function ekranDegistir(id) {
-            tamEkranKameraKapat();
-            document.querySelectorAll('.app-content').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(id === 'screen-stok-cards') { duzenlemeKapat(); stokKartlariniListele(); }
-            if(id === 'screen-stok-detail') { manuelAramaArayuzunuKapat(); }
-            if(id === 'screen-cari-kartlar') { document.getElementById('cariKartAramaInput').value = ""; cariKartlariniListele(); }
-        }
 
         function temizleStokEkran() {
             document.getElementById('barcodeInput').value = '';
