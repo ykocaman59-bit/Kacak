@@ -91,6 +91,11 @@
         .global-alert-text { font-size: 17px; font-weight: bold; color: #333; margin-bottom: 20px; white-space: pre-line; }
         .global-alert-btn { background: #4a86e8; color: white; border: none; padding: 10px 35px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 15px; }
 
+        /* Dinamik Onay Modali Stili */
+        .confirm-btn-container { display: flex; gap: 10px; justify-content: center; width: 100%; }
+        .confirm-btn-yes { background: #5cb85c; color: white; border: none; padding: 10px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 15px; flex: 1; }
+        .confirm-btn-no { background: #d9534f; color: white; border: none; padding: 10px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 15px; flex: 1; }
+
         .custom-select-dialog { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 3000; justify-content: center; align-items: center; }
         .select-dialog-body { background: white; width: 85%; max-width: 320px; border-radius: 24px; padding: 10px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .dialog-option-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; cursor: pointer; border-bottom: 1px solid #eee; font-size: 18px; font-weight: bold; color: #000; }
@@ -116,7 +121,7 @@
         .irsaliye-sub-btn.red { background: #d9534f; }
         .irsaliye-sub-btn.green { background: #5cb85c; }
         .date-input-group { display: flex; gap: 5px; align-items: center; margin-bottom: 10px; }
-        .date-input { padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; font-size: 13px; flex: 1; text-align: center; }
+        .date-input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; font-size: 14px; flex: 1; text-align: center; background: white; color: #333; }
     </style>
 </head>
 <body>
@@ -240,7 +245,7 @@
 
     <main id="screen-irsaliye-main" class="app-content">
         <div class="screen-top-bar">
-            <button class="back-circle-btn" style="padding: 6px 15px; font-size: 15px;" id="irsaliyeBelgeNoBtn" onclick="openBelgeNoDüzenleModal()">ALIS-147568</button>
+            <button class="back-circle-btn" style="padding: 6px 15px; font-size: 15px; background: #e2f0d9; color: #385723; border: 1px solid #b4c6e7;" id="irsaliyeBelgeNoBtn" onclick="openBelgeNoDüzenleModal()">ALIS-147568</button>
             <h3 id="irsaliyeEkranBaslik" style="color:#1f4e79; font-size:18px;">Alış İrsaliyesi</h3>
         </div>
 
@@ -259,7 +264,7 @@
 
         <div class="irsaliye-btn-group" style="margin-top:15px;">
             <button class="irsaliye-sub-btn green" style="padding: 14px;" onclick="irsaliyeYeniEvrakAc()">Yeni Evrak</button>
-            <button class="irsaliye-sub-btn red" id="btnIrsaliyeEvrakSil" style="padding: 14px; display: none;" onclick="irsaliyeEvrakSil()">Evrak Sil</button>
+            <button class="irsaliye-sub-btn red" id="btnIrsaliyeEvrakSil" style="padding: 14px; display: none;" onclick="tetikleEvrakSilmeOnayi()">Evrak Sil</button>
             <button class="irsaliye-sub-btn" style="background:#f0ad4e; padding: 14px; margin-top: 5px;" onclick="openEvrakGetirPenceresiModal()">🔍 Evrak Getir</button>
         </div>
     </main>
@@ -388,14 +393,14 @@
     </div>
 
     <div class="custom-modal" id="belgeNoDüzenleModali">
-        <div class="global-alert-body">
-            <div class="global-alert-text" style="margin-bottom:5px;">Belge Numarasını Düzenle</div>
-            <div style="display:flex; align-items:center; justify-content:center; margin-bottom:15px; background:#e9eef4; border:1px solid #ccc; padding:0; border-radius:4px; overflow:hidden; width:100%;">
-                <span id="modalBelgeNoKilitliKisim" style="font-weight:bold; font-size:16px; color:#1f4e79; padding:10px; background:#d2dceb; user-select:none; border-right:1px solid #ccc;">ALIS-</span>
-                <input type="text" id="modalBelgeNoInput" style="flex:1; border:none; background:transparent; font-size:16px; font-weight:bold; outline:none; padding:10px;">
+        <div class="global-alert-body" style="border-radius: 15px; max-width: 340px;">
+            <div class="global-alert-text" style="margin-bottom:12px; font-size: 16px;">Belge Numarasını Düzenle</div>
+            <div style="display:flex; align-items:center; justify-content:center; margin-bottom:15px; background:white; border:1px solid #b4c6e7; padding:0; border-radius:6px; overflow:hidden; width:100%; height: 45px;">
+                <span id="modalBelgeNoKilitliKisim" style="font-weight:bold; font-size:15px; color:#1f4e79; padding: 0 12px; background:#d2dceb; height: 100%; display: flex; align-items: center; justify-content: center; min-width: 75px; border-right:1px solid #b4c6e7;">ALIS-</span>
+                <input type="text" id="modalBelgeNoInput" style="flex:1; border:none; background:transparent; font-size:16px; font-weight:bold; outline:none; padding: 0 10px; height: 100%;">
             </div>
-            <button class="global-alert-btn" style="width:100%; margin-bottom:5px;" onclick="irsaliyeBelgeNoKaydetVeDon()">Kaydet ve Geri Dön</button>
-            <button class="global-alert-btn" style="background:gray; width:100%;" onclick="document.getElementById('belgeNoDüzenleModali').style.display='none'">İptal</button>
+            <button class="global-alert-btn" style="width:100%; margin-bottom:8px; border-radius: 8px; padding: 11px;" onclick="irsaliyeBelgeNoKaydetVeDon()">Kaydet ve Geri Dön</button>
+            <button class="global-alert-btn" style="background:gray; width:100%; border-radius: 8px; padding: 11px;" onclick="document.getElementById('belgeNoDüzenleModali').style.display='none'">İptal</button>
         </div>
     </div>
 
@@ -405,13 +410,13 @@
             <div style="padding: 15px; background: #f4f6f9;">
                 
                 <label style="font-size:12px; font-weight:bold; color:#1f4e79; display:block; margin-bottom:4px;">Belge No ile Ara:</label>
-                <input type="text" id="archiveSearchBelgeNoInput" oninput="irsaliyeEvraklariSorgulaGetir()" style="width:100%; padding:8px; font-size:14px; border:1px solid #ccc; border-radius:4px; font-weight:bold; margin-bottom:12px;">
+                <input type="text" id="archiveSearchBelgeNoInput" style="width:100%; padding:8px; font-size:14px; border:1px solid #ccc; border-radius:4px; font-weight:bold; margin-bottom:12px;">
 
                 <label style="font-size:12px; font-weight:bold; color:#1f4e79; display:block; margin-bottom:4px;">Tarih Aralığı Filtresi:</label>
                 <div class="date-input-group">
-                    <input type="date" id="irsaliyeTarihIlk" class="date-input" onchange="irsaliyeEvraklariSorgulaGetir()">
+                    <input type="date" id="irsaliyeTarihIlk" class="date-input">
                     <span style="font-weight:bold;">-</span>
-                    <input type="date" id="irsaliyeTarihSon" class="date-input" onchange="irsaliyeEvraklariSorgulaGetir()">
+                    <input type="date" id="irsaliyeTarihSon" class="date-input">
                 </div>
 
                 <div id="irsaliyeSorguSonucAlani" style="margin-top:10px; max-height:180px; overflow-y:auto; background:white; border:1px solid #b4c6e7; border-radius:4px;"></div>
@@ -420,6 +425,16 @@
                     <button class="global-alert-btn" id="btnModalEvrakGetirAksiyon" style="background:#4a86e8; width:100%; border-radius:6px; padding:12px;" onclick="irsaliyeEvraklariSorgulaGetir()">Evrak Getir</button>
                     <button class="global-alert-btn" style="background:gray; width:100%; border-radius:6px; padding:12px;" onclick="document.getElementById('evrakGetirPenceresiModali').style.display='none'">İptal / Kapat</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="global-alert-modal" id="customConfirmKutusu">
+        <div class="global-alert-body" style="border-radius: 20px; max-width: 320px; padding: 25px 20px;">
+            <div class="global-alert-text" id="customConfirmMetni" style="font-size:16px; font-weight:bold; color:#333; margin-bottom:25px; line-height: 1.4;">Onay Mesajı</div>
+            <div class="confirm-btn-container">
+                <button class="confirm-btn-yes" id="customConfirmEvetBtn">Evet</button>
+                <button class="confirm-btn-no" id="customConfirmHayirBtn" onclick="kapatConfirmKutusu()">Hayır</button>
             </div>
         </div>
     </div>
@@ -488,7 +503,7 @@
         let irsaliyeSatirlari = []; 
         let irsaliyeBulunanUrun = null;
         let duzenlenecekSatirIndex = null;
-        let evrakGetirleMiYuklendi = false; // "Evrak Sil" butonunun görünürlük kilidi
+        let evrakGetirleMiYuklendi = false; 
 
         function ozelAlert(mesaj, barkodTemizlensinMi = false) {
             document.getElementById('pencereAlertMetni').innerText = mesaj;
@@ -502,6 +517,20 @@
                 document.getElementById('barcodeInput').value = '';
                 tetiklendiBarkodBosalt = false;
             }
+        }
+
+        // Gelişmiş Özel Onay Motoru
+        function acConfirmKutusu(soruMetni, evetCallback) {
+            document.getElementById('customConfirmMetni').innerText = soruMetni;
+            document.getElementById('customConfirmKutusu').style.display = 'flex';
+            document.getElementById('customConfirmEvetBtn').onclick = function() {
+                kapatConfirmKutusu();
+                evetCallback();
+            };
+        }
+
+        function kapatConfirmKutusu() {
+            document.getElementById('customConfirmKutusu').style.display = 'none';
         }
 
         function veritabaniniYukle() {
@@ -748,18 +777,18 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="text-align:left; padding-left:15px; font-size:15px;"><b>${cari}</b></td>
-                    <td style="width:100px;"><button class="blue-action-btn" style="background:#d9534f; padding:5px 12px; font-size:12px; border-radius:4px;" onclick="cariKartSil('${cari}')">❌ Sil</button></td>
+                    <td style="width:100px;"><button class="blue-action-btn" style="background:#d9534f; padding:5px 12px; font-size:12px; border-radius:4px;" onclick="tetikleCariSilme('${cari}')">❌ Sil</button></td>
                 `;
                 govde.appendChild(tr);
             });
         }
 
-        function cariKartSil(cariAdi) {
-            if(confirm(cariAdi + " carisini silmek istediğinize emin misiniz?")) {
+        function tetikleCariSilme(cariAdi) {
+            acConfirmKutusu(cariAdi + " carisini silmek istediğinize emin misiniz?", function() {
                 carilerVeritabani = carilerVeritabani.filter(c => c !== cariAdi);
                 carilerKaydet();
                 cariKartlariniListele();
-            }
+            });
         }
 
         // 🧾 İRSALİYE MANTIKSAL MOTORU
@@ -768,8 +797,7 @@
             document.getElementById('irsaliyeEkranBaslik').innerText = tip === "ALIS" ? "Alış İrsaliyesi" : "Satış İrsaliyesi";
             document.getElementById('irsaliyeGirisBaslik').innerText = tip === "ALIS" ? "Ürün Kabul Girişi" : "Ürün Çıkış / İade Girişi";
             
-            // 🎯 KURAL: Her girdiğimizde otomatik olarak YENİ tertemiz bir evrak açılarak başlanır
-            aktifIrsaliyeBelgeNo = aktifIrsaliyeTipi + "-" + Math.floor(100000 + Math.random() * 899999);
+            aktifIrsaliyeBelgeNo = tip + "-" + Math.floor(100000 + Math.random() * 899999);
             localStorage.setItem("aktif_belge_no_" + aktifIrsaliyeTipi, aktifIrsaliyeBelgeNo);
             document.getElementById('irsaliyeBelgeNoBtn').innerText = aktifIrsaliyeBelgeNo;
 
@@ -777,7 +805,6 @@
             irsaliyeSatirlari = [];
             document.getElementById('irsaliyeSeciliCariMetni').innerText = "Cari: Seçilmedi";
             
-            // Boş açıldığı için evrak sil butonu gizlenir
             evrakGetirleMiYuklendi = false;
             document.getElementById('btnIrsaliyeEvrakSil').style.display = "none";
 
@@ -799,11 +826,27 @@
 
         function irsaliyeEvrakAnlıkHafizaKaydet() {
             if(irsaliyeSeciliCari !== "Seçilmedi" || irsaliyeSatirlari.length > 0) {
+                // Şimdiki zamanı alıp tarih ve saat verisi ekliyoruz
+                const simdi = new Date();
+                const yil = simdi.getFullYear();
+                const ay = String(simdi.getMonth() + 1).padStart(2, '0');
+                const gun = String(simdi.getDate()).padStart(2, '0');
+                const saat = String(simdi.getHours()).padStart(2, '0');
+                const dakika = String(simdi.getMinutes()).padStart(2, '0');
+                const saniye = String(simdi.getSeconds()).padStart(2, '0');
+                
+                const formatliTarih = `${yil}-${ay}-${gun}`;
+                const formatliSaat = `${saat}:${dakika}:${saniye}`;
+
+                // Eğer arşivde bu evrak varsa tarihini bozma, yoksa yeni ata
+                const eskiEvrak = evraklarArsivi[aktifIrsaliyeBelgeNo];
+
                 evraklarArsivi[aktifIrsaliyeBelgeNo] = {
                     belgeNo: aktifIrsaliyeBelgeNo,
                     tip: aktifIrsaliyeTipi,
                     cari: irsaliyeSeciliCari,
-                    tarih: "2026-05-29",
+                    tarih: eskiEvrak ? eskiEvrak.tarih : formatliTarih,
+                    saat: eskiEvrak ? eskiEvrak.saat : formatliSaat,
                     satirlar: irsaliyeSatirlari
                 };
             } else {
@@ -814,7 +857,6 @@
 
         function openBelgeNoDüzenleModal() {
             document.getElementById('modalBelgeNoKilitliKisim').innerText = aktifIrsaliyeTipi + "-";
-            // Sadece arka taraftaki sayısal veya dinamik kısmı inputa basıyoruz
             const parcalar = aktifIrsaliyeBelgeNo.split('-');
             document.getElementById('modalBelgeNoInput').value = parcalar[1] || "";
             document.getElementById('belgeNoDüzenleModali').style.display = 'flex';
@@ -824,7 +866,6 @@
             const arkaKisim = document.getElementById('modalBelgeNoInput').value.toUpperCase().trim();
             if(!arkaKisim) { ozelAlert("Belge numarası boş bırakılamaz!"); return; }
             
-            // Kilit koruması uygulanarak birleştirme yapılıyor
             const yeniNo = aktifIrsaliyeTipi + "-" + arkaKisim;
             
             if(yeniNo !== aktifIrsaliyeBelgeNo) {
@@ -856,39 +897,48 @@
             ozelAlert("Yeni boş evrak açıldı.");
         }
 
-        function irsaliyeEvrakSil() {
-            if(confirm("Bu evrağı sistemden komple silmek istediğinize emin misiniz? Yapılan stok hareketleri iptal edilecektir!")) {
-                // Stok adetlerini tersine işlet ve geri çek
-                irsaliyeSatirlari.forEach(satir => {
-                    stokMiktariniDegistirArkaPlan(satir.barkod, satir.adet, true);
-                });
+        // 🚨 Özel Soru Şablonu ile Evrak Silme Onayı tetikleyicisi
+        function tetikleEvrakSilmeOnayi() {
+            acConfirmKutusu("Bu evrağı sistemden komple silmek istediğinize emin misiniz? Yapılan stok hareketleri iptal edilecektir!", function() {
+                irsaliyeEvrakSilGerçekleştir();
+            });
+        }
 
-                delete evraklarArsivi[aktifIrsaliyeBelgeNo];
-                evraklarıKaydet();
-                veritabaniniKaydet();
+        function irsaliyeEvrakSilGerçekleştir() {
+            irsaliyeSatirlari.forEach(satir => {
+                stokMiktariniDegistirArkaPlan(satir.barkod, satir.adet, true);
+            });
 
-                irsaliyeSeciliCari = "Seçilmedi";
-                irsaliyeSatirlari = [];
-                document.getElementById('irsaliyeSeciliCariMetni').innerText = "Cari: Seçilmedi";
-                
-                aktifIrsaliyeBelgeNo = aktifIrsaliyeTipi + "-" + Math.floor(100000 + Math.random() * 899999);
-                localStorage.setItem("aktif_belge_no_" + aktifIrsaliyeTipi, aktifIrsaliyeBelgeNo);
-                document.getElementById('irsaliyeBelgeNoBtn').innerText = aktifIrsaliyeBelgeNo;
+            delete evraklarArsivi[aktifIrsaliyeBelgeNo];
+            evraklarıKaydet();
+            veritabaniniKaydet();
 
-                evrakGetirleMiYuklendi = false;
-                document.getElementById('btnIrsaliyeEvrakSil').style.display = "none";
+            irsaliyeSeciliCari = "Seçilmedi";
+            irsaliyeSatirlari = [];
+            document.getElementById('irsaliyeSeciliCariMetni').innerText = "Cari: Seçilmedi";
+            
+            aktifIrsaliyeBelgeNo = aktifIrsaliyeTipi + "-" + Math.floor(100000 + Math.random() * 899999);
+            localStorage.setItem("aktif_belge_no_" + aktifIrsaliyeTipi, aktifIrsaliyeBelgeNo);
+            document.getElementById('irsaliyeBelgeNoBtn').innerText = aktifIrsaliyeBelgeNo;
 
-                ozelAlert("Evrak ve tüm bağlı hareketleri sistemden komple silindi.");
-            }
+            evrakGetirleMiYuklendi = false;
+            document.getElementById('btnIrsaliyeEvrakSil').style.display = "none";
+
+            ozelAlert("Evrak ve tüm bağlı hareketleri sistemden komple silindi.");
         }
 
         // EVRAK GETİR PENCERESİ MODAL MANTIĞI
         function openEvrakGetirPenceresiModal() {
             document.getElementById('evrakGetirModalBaslik').innerText = aktifIrsaliyeTipi === "ALIS" ? "Alış Evrak Arşivi" : "Satış Evrak Arşivi";
             document.getElementById('archiveSearchBelgeNoInput').value = "";
-            document.getElementById('irsaliyeTarihIlk').value = "2026-05-29";
-            document.getElementById('irsaliyeTarihSon').value = "2026-05-29";
-            irsaliyeEvraklariSorgulaGetir();
+            
+            // Tarih kutularını varsayılan olarak bugüne (30.05.2026) kilitliyoruz
+            document.getElementById('irsaliyeTarihIlk').value = "2026-05-30";
+            document.getElementById('irsaliyeTarihSon').value = "2026-05-30";
+            
+            // 🎯 KURAL: İlk açıldığında evraklar gizli kalır
+            document.getElementById('irsaliyeSorguSonucAlani').innerHTML = "";
+            
             document.getElementById('evrakGetirPenceresiModali').style.display = 'flex';
         }
 
@@ -896,41 +946,75 @@
             const alan = document.getElementById('irsaliyeSorguSonucAlani');
             alan.innerHTML = "";
             const arananNo = document.getElementById('archiveSearchBelgeNoInput').value.toLowerCase().trim();
+            
+            const ilkTarihStr = document.getElementById('irsaliyeTarihIlk').value;
+            const sonTarihStr = document.getElementById('irsaliyeTarihSon').value;
 
-            let sayac = 0;
+            if (!ilkTarihStr || !sonTarihStr) {
+                ozelAlert("Lütfen geçerli bir tarih aralığı seçin!");
+                return;
+            }
+
+            const ilkTarih = new Date(ilkTarihStr);
+            const sonTarih = new Date(sonTarihStr);
+
+            // Evrakları filtreleme ve listeye alma aşaması
+            let filtrelenmisEvraklar = [];
+
             for(let k in evraklarArsivi) {
                 const evrak = evraklarArsivi[k];
-                // Sadece aktif irsaliye tipini süzgeçten geçir (Alış ise Alış, Satış ise Satış)
                 if(evrak.tip === aktifIrsaliyeTipi) {
                     if(arananNo && !evrak.belgeNo.toLowerCase().includes(arananNo)) continue;
                     
-                    sayac++;
-                    const row = document.createElement('div');
-                    row.style.padding = "10px"; row.style.borderBottom = "1px solid #ccc"; row.style.cursor = "pointer"; row.style.fontWeight = "bold"; row.style.fontSize = "13px";
-                    row.innerHTML = `📁 ${evrak.belgeNo} - <span style="color:#4a86e8;">${evrak.cari}</span> (${evrak.satirlar.length} Kalem)`;
-                    
-                    row.onclick = function() {
-                        aktifIrsaliyeBelgeNo = evrak.belgeNo;
-                        localStorage.setItem("aktif_belge_no_" + aktifIrsaliyeTipi, aktifIrsaliyeBelgeNo);
-                        document.getElementById('irsaliyeBelgeNoBtn').innerText = aktifIrsaliyeBelgeNo;
-                        irsaliyeSeciliCari = evrak.cari;
-                        irsaliyeSatirlari = evrak.satirlar;
-                        document.getElementById('irsaliyeSeciliCariMetni').innerText = "Cari: " + irsaliyeSeciliCari;
-                        
-                        // Evrak dışarıdan çağrıldığı için silme düğmesini aktifleştir
-                        evrakGetirleMiYuklendi = true;
-                        document.getElementById('btnIrsaliyeEvrakSil').style.display = "block";
+                    // Tarih kontrolü filtreleme katmanı
+                    if (evrak.tarih) {
+                        const evrakTarihi = new Date(evrak.tarih);
+                        if (evrakTarihi < ilkTarih || evrakTarihi > sonTarih) continue;
+                    } else {
+                        continue; 
+                    }
 
-                        document.getElementById('evrakGetirPenceresiModali').style.display = 'none';
-                        ozelAlert(evrak.belgeNo + " evrağı başarıyla ekrana getirildi.");
-                    };
-                    alan.appendChild(row);
+                    filtrelenmisEvraklar.push(evrak);
                 }
             }
 
-            if(sayac === 0) {
-                alan.innerHTML = "<div style='padding:10px; color:red; font-weight:bold; text-align:center;'>Evrak bulunamadı.</div>";
+            // 🎯 KURAL: Bulunan evrakları hem tarihe hem de alınan saate göre kronolojik sırala
+            filtrelenmisEvraklar.sort((a, b) => {
+                const tarihA = new Date((a.tarih || "2026-05-30") + "T" + (a.saat || "00:00:00"));
+                const tarihB = new Date((b.tarih || "2026-05-30") + "T" + (b.saat || "00:00:00"));
+                return tarihA - tarihB;
+            });
+
+            // Tabloyu dökme/çizme aşaması
+            if(filtrelenmisEvraklar.length === 0) {
+                alan.innerHTML = "<div style='padding:15px; color:red; font-weight:bold; text-align:center;'>Evrak bulunamadı.</div>";
+                return;
             }
+
+            filtrelenmisEvraklar.forEach(evrak => {
+                const row = document.createElement('div');
+                row.style.padding = "10px"; row.style.borderBottom = "1px solid #ccc"; row.style.cursor = "pointer"; row.style.fontWeight = "bold"; row.style.fontSize = "13px";
+                
+                // Saat verisini ekranda daha net göstermek için formatlama
+                const gosterimSaati = evrak.saat ? evrak.saat.substring(0, 5) : "--:--";
+                row.innerHTML = `📁 ${evrak.belgeNo} - <span style="color:#4a86e8;">${evrak.cari}</span> <small style="color:#666;">(${gosterimSaati})</small> [${evrak.satirlar.length} Kalem]`;
+                
+                row.onclick = function() {
+                    aktifIrsaliyeBelgeNo = evrak.belgeNo;
+                    localStorage.setItem("aktif_belge_no_" + aktifIrsaliyeTipi, aktifIrsaliyeBelgeNo);
+                    document.getElementById('irsaliyeBelgeNoBtn').innerText = aktifIrsaliyeBelgeNo;
+                    irsaliyeSeciliCari = evrak.cari;
+                    irsaliyeSatirlari = evrak.satirlar;
+                    document.getElementById('irsaliyeSeciliCariMetni').innerText = "Cari: " + irsaliyeSeciliCari;
+                    
+                    evrakGetirleMiYuklendi = true;
+                    document.getElementById('btnIrsaliyeEvrakSil').style.display = "block";
+
+                    document.getElementById('evrakGetirPenceresiModali').style.display = 'none';
+                    ozelAlert(evrak.belgeNo + " evrağı başarıyla ekrana getirildi.");
+                };
+                alan.appendChild(row);
+            });
         }
 
         // CARİ SEÇİM ALANI
@@ -1055,7 +1139,7 @@
                     <td>
                         <div style="display:flex; gap:2px; justify-content:center;">
                             <button class="img-btn" style="background:#f0ad4e; padding:3px 6px;" onclick="irsaliyeSatirDuzenlePencereAc(${idx})">✏️</button>
-                            <button class="img-btn" style="background:#d9534f; padding:3px 6px;" onclick="irsaliyeSatirSilmeIslemi(${idx})">❌</button>
+                            <button class="img-btn" style="background:#d9534f; padding:3px 6px;" onclick="tetikleSatirSilme(${idx})">❌</button>
                         </div>
                     </td>
                 `;
@@ -1063,8 +1147,8 @@
             });
         }
 
-        function irsaliyeSatirSilmeIslemi(index) {
-            if(confirm("Bu satırı evraktan silmek istiyor musunuz?")) {
+        function tetikleSatirSilme(index) {
+            acConfirmKutusu("Bu satırı evraktan silmek istiyor musunuz?", function() {
                 const satir = irsaliyeSatirlari[index];
                 stokMiktariniDegistirArkaPlan(satir.barkod, satir.adet, true);
                 
@@ -1077,7 +1161,7 @@
                 } else {
                     irsaliyeIslemSatirlariTabloDoldur();
                 }
-            }
+            });
         }
 
         function irsaliyeSatirDuzenlePencereAc(index) {
@@ -1182,7 +1266,7 @@
                     <td>
                         <div style="display:flex; flex-direction:column; gap:4px;">
                             <button class="blue-action-btn" style="padding:5px 8px; font-size:11px; background:#f0ad4e; border-radius:4px;" onclick="duzenlemeModunuAc(${idx})">✏️ Düzenle</button>
-                            <button class="blue-action-btn" style="padding:5px 8px; font-size:11px; background:#d9534f; border-radius:4px;" onclick="stokKartiSil(${idx})">❌ Sil</button>
+                            <button class="blue-action-btn" style="padding:5px 8px; font-size:11px; background:#d9534f; border-radius:4px;" onclick="tetikleStokSilme(${idx})">❌ Sil</button>
                         </div>
                     </td>
                 `;
@@ -1190,17 +1274,16 @@
             });
         }
 
-        function stokKartiSil(index) {
-            if(confirm("Bu stok kartını sistemden tamamen silmek istediğinize emin misiniz?")) {
+        function tetikleStokSilme(index) {
+            acConfirmKutusu("Bu stok kartını sistemden tamamen silmek istediğinize emin misiniz?", function() {
                 aktifMağazaVeritabani.splice(index, 1); veritabaniniKaydet(); stokKartlariniListele();
-            }
+            });
         }
 
         function catalogFiltrele() { stokKartlariniListele(document.getElementById('katalogArama').value.toLowerCase().trim()); }
         
         // ANA MENÜYE GÜVENLİ DÖNÜŞ MOTORU
         function direktAnaMenuyeZorlaDon() {
-            // 🎯 KURAL: İçerisinde ürün kalmamış, tamamen temizlenmiş/boş evrak varsa çıkışta arşivden uçur
             if(aktifIrsaliyeBelgeNo && evraklarArsivi[aktifIrsaliyeBelgeNo]) {
                 if(irsaliyeSatirlari.length === 0) {
                     delete evraklarArsivi[aktifIrsaliyeBelgeNo];
@@ -1215,10 +1298,10 @@
             document.getElementById('islemAdetInput').value = "1";
             manuelAramaArayuzunuKapat();
             
-            // Tüm geçici pencereleri maskele
             document.getElementById('sub-screen-irsaliye-cari-sec').style.display = "none";
             document.getElementById('sub-screen-irsaliye-barkod-giris').style.display = "none";
             document.getElementById('evrakGetirPenceresiModali').style.display = "none";
+            document.getElementById('customConfirmKutusu').style.display = "none";
             
             ekranDegistir('screen-menu'); 
         }
