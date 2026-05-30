@@ -390,9 +390,9 @@
     <div class="custom-modal" id="belgeNoDüzenleModali">
         <div class="global-alert-body">
             <div class="global-alert-text" style="margin-bottom:5px;">Belge Numarasını Düzenle</div>
-            <div style="display:flex; align-items:center; justify-content:center; margin-bottom:15px; background:#e9eef4; border:1px solid #ccc; padding:6px; border-radius:4px;">
-                <span id="modalBelgeNoKilitliKisim" style="font-weight:bold; font-size:16px; color:#1f4e79; padding-right:2px; user-select:none;">ALIS-</span>
-                <input type="text" id="modalBelgeNoInput" style="flex:1; border:none; background:transparent; font-size:16px; font-weight:bold; outline:none; padding:2px;">
+            <div style="display:flex; align-items:center; justify-content:center; margin-bottom:15px; background:#e9eef4; border:1px solid #ccc; padding:0; border-radius:4px; overflow:hidden; width:100%;">
+                <span id="modalBelgeNoKilitliKisim" style="font-weight:bold; font-size:16px; color:#1f4e79; padding:10px; background:#d2dceb; user-select:none; border-right:1px solid #ccc;">ALIS-</span>
+                <input type="text" id="modalBelgeNoInput" style="flex:1; border:none; background:transparent; font-size:16px; font-weight:bold; outline:none; padding:10px;">
             </div>
             <button class="global-alert-btn" style="width:100%; margin-bottom:5px;" onclick="irsaliyeBelgeNoKaydetVeDon()">Kaydet ve Geri Dön</button>
             <button class="global-alert-btn" style="background:gray; width:100%;" onclick="document.getElementById('belgeNoDüzenleModali').style.display='none'">İptal</button>
@@ -405,7 +405,7 @@
             <div style="padding: 15px; background: #f4f6f9;">
                 
                 <label style="font-size:12px; font-weight:bold; color:#1f4e79; display:block; margin-bottom:4px;">Belge No ile Ara:</label>
-                <input type="text" id="archiveSearchBelgeNoInput" placeholder="Örn: 147568" oninput="irsaliyeEvraklariSorgulaGetir()" style="width:100%; padding:8px; font-size:14px; border:1px solid #ccc; border-radius:4px; font-weight:bold; margin-bottom:12px;">
+                <input type="text" id="archiveSearchBelgeNoInput" oninput="irsaliyeEvraklariSorgulaGetir()" style="width:100%; padding:8px; font-size:14px; border:1px solid #ccc; border-radius:4px; font-weight:bold; margin-bottom:12px;">
 
                 <label style="font-size:12px; font-weight:bold; color:#1f4e79; display:block; margin-bottom:4px;">Tarih Aralığı Filtresi:</label>
                 <div class="date-input-group">
@@ -416,8 +416,9 @@
 
                 <div id="irsaliyeSorguSonucAlani" style="margin-top:10px; max-height:180px; overflow-y:auto; background:white; border:1px solid #b4c6e7; border-radius:4px;"></div>
                 
-                <div style="display:flex; gap:10px; margin-top:15px;">
-                    <button class="global-alert-btn" style="background:gray; flex:1;" onclick="document.getElementById('evrakGetirPenceresiModali').style.display='none'">İptal / Kapat</button>
+                <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+                    <button class="global-alert-btn" id="btnModalEvrakGetirAksiyon" style="background:#4a86e8; width:100%; border-radius:6px; padding:12px;" onclick="irsaliyeEvraklariSorgulaGetir()">Evrak Getir</button>
+                    <button class="global-alert-btn" style="background:gray; width:100%; border-radius:6px; padding:12px;" onclick="document.getElementById('evrakGetirPenceresiModali').style.display='none'">İptal / Kapat</button>
                 </div>
             </div>
         </div>
